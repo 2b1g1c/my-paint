@@ -4,7 +4,7 @@
 #include "app/app.hpp"
 #include "window/window.hpp"
 #include "render/shader.hpp"
-#include "render/vao.hpp"
+#include "render/prim.hpp"
 
 void processInput(GLFWwindow *window);
 
@@ -16,23 +16,19 @@ int main(int argc, char **argv)
   mr::Window *window = app.create_window(800, 600, "CGSGFOREVER");
   mr::Shader shader = mr::Shader("shaders/default");
 
-  // set up vertex data (and buffer(s)) and configure vertex attributes
-  // ------------------------------------------------------------------
-  float vertices[] = {
-    0.5f,  0.5f, 0.0f,  // top right
-    0.5f, -0.5f, 0.0f,  // bottom right
-    -0.5f, -0.5f, 0.0f,  // bottom left
-    -0.5f,  0.5f, 0.0f   // top left
+  using vec3 = float[3];
+  vec3 vertices[] = {
+    {0.5f,  0.5f, 0.0f},  // top right
+    {0.5f, -0.5f, 0.0f},  // bottom right
+    {-0.5f, -0.5f, 0.0f}, // bottom left
+    {-0.5f,  0.5f, 0.0f}  // top left
   };
   unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,  // first Triangle
     1, 2, 3   // second Triangle
   };
 
-  mr::VAO vao = mr::VAO(std::span<float>{vertices}, std::span<unsigned int>{indices});
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
+  mr::Prim vao(std::span<vec3>{vertices}, std::span<unsigned int>{indices});
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -42,7 +38,7 @@ int main(int argc, char **argv)
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     shader.bind();
-    vao.bind();
+    vao.draw();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window->handle());
