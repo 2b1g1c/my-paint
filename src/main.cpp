@@ -6,7 +6,7 @@
 #include "render/shader.hpp"
 #include "render/prim.hpp"
 
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, mr::Prim &pr);
 
 int main(int argc, char **argv)
 {
@@ -14,32 +14,30 @@ int main(int argc, char **argv)
 
   mr::Application app;
   mr::Window *window = app.create_window(800, 600, "CGSGFOREVER");
-  mr::Shader shader = mr::Shader("shaders/default");
 
-  using vec = float[3];
+  using vec = float[2];
   vec vertices[] = {
-    {0.5f,  0.5f, 1.0f},  // top right
-    {0.5f, -0.5f, 1.0f},  // bottom right
-    {-0.5f, -0.5f, 1.0f}, // bottom left
-    {-0.5f,  0.5f, 1.0f}  // top left
+    {0.5f,  0.5f},  // top right
+    {0.5f, -0.5f},  // bottom right
+    {-0.5f, -0.5f}, // bottom left
+    {-0.5f,  0.5f}  // top left
   };
   unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,  // first Triangle
     1, 2, 3   // second Triangle
   };
 
-  mr::Prim vao(std::span<vec>{vertices}, std::span<unsigned int>{indices});
+  mr::Prim prim("default", std::span<vec>{vertices}, std::span<unsigned int>{indices}, 0.0f, 0.0f, 1.0f);
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while (!glfwWindowShouldClose(window->handle())) {
-    processInput(window->handle());
+    processInput(window->handle(), prim);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    shader.bind();
-    vao.draw();
+    prim.draw();
 
     glfwSwapBuffers(window->handle());
     glfwPollEvents();
@@ -50,8 +48,31 @@ int main(int argc, char **argv)
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window, mr::Prim &pr)
 {
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
+  }
+  else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+           glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+	pr.posx() -= 0.001;
+  }
+  else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+           glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+	pr.posx() += 0.001;
+  }
+  else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+           glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+	pr.posy() -= 0.001;
+  }
+  else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+           glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+	pr.posy() += 0.001;
+  }
+  else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+    pr.rot() += 0.001;
+  }
+  else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+    pr.rot() -= 0.001;
+  }
 }

@@ -13,6 +13,9 @@ namespace mr {
     Shader() noexcept = default;
     Shader(std::string_view source);
 
+    // getters
+    std::uint32_t id() const { return _id; }
+
     // copy semantic
     Shader(const Shader &) = default;
     Shader& operator=(const Shader &) = default;

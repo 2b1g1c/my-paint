@@ -19,10 +19,27 @@ namespace mr {
     std::uint32_t _num_of_elements;  /* number of elements on the device */
     std::uint32_t _num_of_patches;   /* number of patches */
 
+    Shader shader;
+
+    float p[2]; // pos
+    float a; // angle
+
   public:
+    // getters
+	float posx() const { return p[0]; }
+	float& posx() { return p[0]; }
+	float posy() const { return p[1]; }
+	float& posy() { return p[1]; }
+	float rot() const { return a; }
+	float& rot() { return a; }
+
     template <typename V, typename I>
-      Prim(std::span<V> vertices, std::span<I> indices) {
-        /* Filling in given primitive parameters */
+      Prim(std::string_view source, std::span<V> vertices, std::span<I> indices, float posx, float posy, float angle) {
+        shader = Shader(source);
+        p[0] = posx;
+        p[1] = posy;
+        a = angle;
+
         if (vertices.size() != 0) {
           glGenVertexArrays(1, &_va);
 
@@ -60,6 +77,10 @@ namespace mr {
     }
 
     void draw() {
+      shader.bind();
+	  glUniform2f(glGetUniformLocation(shader.id(), "translation"), p[0], p[1]);
+	  glUniform1f(glGetUniformLocation(shader.id(), "rotation"), a);
+
       glBindVertexArray(_va);
 
       if (_ibuf == 0) {

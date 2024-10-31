@@ -25,11 +25,11 @@ std::vector<char> read_file(std::filesystem::path source) {
 }
 
 std::vector<char> read_vert(std::string_view source_dir) {
-  return read_file(glb::exec_path / "bin" / source_dir / "vert.glsl");
+  return read_file(glb::exec_path / "bin" / "shaders" / source_dir / "vert.glsl");
 }
 
 std::vector<char> read_frag(std::string_view source_dir) {
-  return read_file(glb::exec_path / "bin" / source_dir / "frag.glsl");
+  return read_file(glb::exec_path / "bin" / "shaders" / source_dir / "frag.glsl");
 }
 
 mr::Shader::Shader(std::string_view source) {

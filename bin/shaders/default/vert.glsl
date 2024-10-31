@@ -1,5 +1,8 @@
 #version 330 core
 
+uniform vec2 translation;
+uniform float rotation;
+
 vec2 rotate(vec2 v, float a) {
 	float s = sin(a);
 	float c = cos(a);
@@ -7,8 +10,8 @@ vec2 rotate(vec2 v, float a) {
 	return m * v;
 }
 
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec2 aPos;
 void main() {
-  gl_Position = vec4(rotate(aPos.xy, aPos.z), 0.0f, 1.0f);
+  gl_Position = vec4(translation + rotate(aPos.xy, rotation), 0.0f, 1.0f);
 }
 
