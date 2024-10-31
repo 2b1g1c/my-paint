@@ -7,12 +7,6 @@ file(
 include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
 
 CPMFindPackage(
-  NAME mr-math
-  GITHUB_REPOSITORY 4j-company/mr-math
-  GIT_TAG fix/cmake
-)
-
-CPMFindPackage(
   NAME glfw3
   GITHUB_REPOSITORY glfw/glfw
   GIT_TAG 3.4
@@ -24,10 +18,13 @@ CPMFindPackage(
 
 # set important variables
 set(DEPS_LIBRARIES
-  mr-math-lib
   glfw
-  GL
 )
+if (WIN32)
+  set(DEPS_LIBRARIES ${DEPS_LIBRARIES} opengl32)
+else()
+  set(DEPS_LIBRARIES ${DEPS_LIBRARIES} GL)
+endif()
 
 set(DEPS_INCLUDE_DIRS
 )
