@@ -14,7 +14,7 @@ namespace mr {
     };
 
     TopologyType _ttype = TopologyType::eTrimesh;
-    std::uint32_t _num_of_instances = 0;
+    std::uint32_t _num_of_instances = 1;
     std::uint32_t _vbuf, _ibuf, _va; /* vertex, index buffers, vertex array from the device */
     std::uint32_t _num_of_elements;  /* number of elements on the device */
     std::uint32_t _num_of_patches;   /* number of patches */

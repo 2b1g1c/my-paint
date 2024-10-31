@@ -76,6 +76,7 @@ mr::Shader::Shader(std::string_view source) {
     std::cout << "SHADER LINKING ERROR\n" << infoLog << std::endl;
   }
 
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
+  _vshd = vertexShader;
+  _fshd = fragmentShader;
+  _id = shaderProgram;
 }

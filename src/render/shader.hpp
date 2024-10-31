@@ -5,13 +5,38 @@
 namespace mr {
   class Shader {
   private:
-    int _id;
+    std::uint32_t _vshd = 0;
+    std::uint32_t _fshd = 0;
+    std::uint32_t _id = 0;
 
   public:
     Shader() noexcept = default;
     Shader(std::string_view source);
 
+    // copy semantic
+    Shader(const Shader &) = default;
+    Shader& operator=(const Shader &) = default;
+
+    // move semantic
+    Shader(Shader &&other) noexcept {
+      std::swap(_vshd, other._vshd);
+      std::swap(_fshd, other._fshd);
+      std::swap(_id, other._id);
+    }
+    Shader & operator=(Shader &&other) {
+      std::swap(_vshd, other._vshd);
+      std::swap(_fshd, other._fshd);
+      std::swap(_id, other._id);
+      return *this;
+    }
+
     ~Shader() {
+      glDetachShader(_id, _vshd);
+      glDeleteShader(_vshd);
+
+      glDetachShader(_id, _fshd);
+      glDeleteShader(_fshd);
+
       glDeleteProgram(_id);
     }
 
