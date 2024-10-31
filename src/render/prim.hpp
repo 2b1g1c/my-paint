@@ -6,11 +6,11 @@ namespace mr {
   class Prim {
   private:
     enum class TopologyType : std::uint32_t {
-      eTrimesh,  /* GL_TRIANGLES */
-      ePoint,    /* GL_POINTS */
-      eTriStrip, /* GL_TRIANGLE_STRIP (Grid) */
-      ePatches,  /* GL_PATCHES (Tesselation) */
-      eLines     /* GL_LINES */
+      eTrimesh = GL_TRIANGLES,
+      ePoints = GL_POINTS,
+      eTriStrip = GL_TRIANGLE_STRIP,
+      ePatches = GL_PATCHES,
+      eLines = GL_LINES
     };
 
     TopologyType _ttype = TopologyType::eTrimesh;
@@ -41,7 +41,7 @@ namespace mr {
           glBufferData(GL_ARRAY_BUFFER, sizeof(V) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
           /* Semantic merging */
-          glVertexAttribPointer(0, sizeof(V), GL_FLOAT, false, sizeof(V), nullptr); // single Vec3f
+          glVertexAttribPointer(0, sizeof(V) / sizeof(float), GL_FLOAT, false, sizeof(V), nullptr); // single Vec3f
           glEnableVertexAttribArray(0);
 
           glBindVertexArray(0);
