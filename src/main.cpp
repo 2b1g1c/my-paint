@@ -16,19 +16,19 @@ int main(int argc, char **argv)
   mr::Window *window = app.create_window(800, 600, "CGSGFOREVER");
   mr::Shader shader = mr::Shader("shaders/default");
 
-  using vec3 = float[3];
-  vec3 vertices[] = {
-    {0.5f,  0.5f, 0.0f},  // top right
-    {0.5f, -0.5f, 0.0f},  // bottom right
-    {-0.5f, -0.5f, 0.0f}, // bottom left
-    {-0.5f,  0.5f, 0.0f}  // top left
+  using vec = float[3];
+  vec vertices[] = {
+    {0.5f,  0.5f, 1.0f},  // top right
+    {0.5f, -0.5f, 1.0f},  // bottom right
+    {-0.5f, -0.5f, 1.0f}, // bottom left
+    {-0.5f,  0.5f, 1.0f}  // top left
   };
   unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,  // first Triangle
     1, 2, 3   // second Triangle
   };
 
-  mr::Prim vao(std::span<vec3>{vertices}, std::span<unsigned int>{indices});
+  mr::Prim vao(std::span<vec>{vertices}, std::span<unsigned int>{indices});
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 

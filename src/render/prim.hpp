@@ -22,14 +22,6 @@ namespace mr {
   public:
     template <typename V, typename I>
       Prim(std::span<V> vertices, std::span<I> indices) {
-        for (auto v : vertices) {
-          std::cout << '(' << v[0] << ' ' << v[1] << ' ' << v[2] << ')' << ' ' << sizeof(V) << std::endl;
-        }
-        for (auto i : indices) {
-          std::cout << i << ' ';
-        }
-        std::cout << std::endl;
-
         /* Filling in given primitive parameters */
         if (vertices.size() != 0) {
           glGenVertexArrays(1, &_va);
