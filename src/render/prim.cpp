@@ -673,8 +673,8 @@ mr::Prim mr::create_circle(float posx, float posy, float r) noexcept {
       std::execution::par_unseq,
       vertices, vertices + sizeof(vertices) / sizeof(vec2),
       [r, posx, posy](vec2 &v) {
-        v[0] = v[0] * r + posx;
-        v[1] = v[1] * r + posy;
+        v[0] = v[0] * r;
+        v[1] = v[1] * r;
       });
 
   std::uint32_t indices[629 * 3] {0};
@@ -683,10 +683,10 @@ mr::Prim mr::create_circle(float posx, float posy, float r) noexcept {
     indices[i * 3 + 2] = i + 1;
   }
 
-  return mr::Prim("default", std::span<vec2>(vertices), std::span<std::uint32_t>(indices));
+  return mr::Prim("default", std::span<vec2>(vertices), std::span<std::uint32_t>(indices), posx, posy);
 }
 
-mr::Prim mr::create_square(float posx, float poxy, float a) noexcept {
+mr::Prim mr::create_square(float posx, float posy, float a) noexcept {
   using vec2 = float[2];
 
   vec2 vertices[] = {
@@ -709,5 +709,5 @@ mr::Prim mr::create_square(float posx, float poxy, float a) noexcept {
     1, 2, 3  // second Triangle
   };
 
-  return mr::Prim("default", std::span<vec2>{vertices}, std::span<unsigned int>{indices});
+  return mr::Prim("default", std::span<vec2>{vertices}, std::span<unsigned int>{indices}, posx, posy);
 }
