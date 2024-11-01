@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.hpp"
+#include "render/shader.hpp"
 
 namespace mr {
   class Prim {
@@ -15,9 +16,9 @@ namespace mr {
 
     TopologyType _ttype = TopologyType::eTrimesh;
     std::uint32_t _num_of_instances = 1;
-    std::uint32_t _vbuf, _ibuf, _va; /* vertex, index buffers, vertex array from the device */
-    std::uint32_t _num_of_elements;  /* number of elements on the device */
-    std::uint32_t _num_of_patches;   /* number of patches */
+    std::uint32_t _vbuf, _ibuf, _va; // vertex, index buffers, vertex array from the device
+    std::uint32_t _num_of_elements;  // number of elements on the device
+    std::uint32_t _num_of_patches;   // number of patches
 
     Shader shader;
 
@@ -25,17 +26,11 @@ namespace mr {
     float a; // angle
 
   public:
-    // getters
-	float posx() const { return p[0]; }
-	float& posx() { return p[0]; }
-	float posy() const { return p[1]; }
-	float& posy() { return p[1]; }
-	float rot() const { return a; }
-	float& rot() { return a; }
+    Prim() noexcept = default;
 
     template <typename V, typename I>
-      Prim(std::string_view source, std::span<V> vertices, std::span<I> indices, float posx, float posy, float angle) {
-        shader = Shader(source);
+      Prim(std::string_view source, std::span<V> vertices, std::span<I> indices, float posx = 0, float posy = 0, float angle = 0) {
+        shader = mr::Shader(source);
         p[0] = posx;
         p[1] = posy;
         a = angle;
@@ -70,30 +65,24 @@ namespace mr {
         }
       }
 
-    ~Prim() {
-      glDeleteVertexArrays(1, &_va);
-      glDeleteBuffers(1, &_vbuf);
-      glDeleteBuffers(1, &_ibuf);
-    }
+    ~Prim() noexcept;
 
-    void draw() {
-      shader.bind();
-	  glUniform2f(glGetUniformLocation(shader.id(), "translation"), p[0], p[1]);
-	  glUniform1f(glGetUniformLocation(shader.id(), "rotation"), a);
+    void draw() noexcept;
 
-      glBindVertexArray(_va);
-
-      if (_ibuf == 0) {
-        glDrawArraysInstanced((uint32_t)_ttype, 0, _num_of_elements, _num_of_instances);
-      }
-      else {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibuf);
-        glDrawElementsInstanced((uint32_t)_ttype, _num_of_elements, GL_UNSIGNED_INT, NULL, _num_of_instances);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-      }
-
-      /* Turning vertex array off */
-      glBindVertexArray(0);
-    }
+    // getters
+    float posx() const { return p[0]; }
+    float& posx() { return p[0]; }
+    float posy() const { return p[1]; }
+    float& posy() { return p[1]; }
+    float rot() const { return a; }
+    float& rot() { return a; }
   };
+
+  Prim create_circle(float posx, float poxy, float r) noexcept;
+  Prim create_square(float posx, float poxy, float a) noexcept;
+  template <typename V>
+    inline mr::Prim create_from_points(std::span<V> vertices) noexcept {
+      // TODO: implement (via triangulation (on GPU???))
+      return mr::Prim();
+    }
 }

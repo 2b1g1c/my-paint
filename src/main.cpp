@@ -15,19 +15,7 @@ int main(int argc, char **argv)
   mr::Application app;
   mr::Window *window = app.create_window(800, 600, "CGSGFOREVER");
 
-  using vec = float[2];
-  vec vertices[] = {
-    {0.5f,  0.5f},  // top right
-    {0.5f, -0.5f},  // bottom right
-    {-0.5f, -0.5f}, // bottom left
-    {-0.5f,  0.5f}  // top left
-  };
-  unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 3,  // first Triangle
-    1, 2, 3   // second Triangle
-  };
-
-  mr::Prim prim("default", std::span<vec>{vertices}, std::span<unsigned int>{indices}, 0.0f, 0.0f, 1.0f);
+  mr::Prim prim = mr::create_circle(0, 0, 0.1);
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -50,6 +38,15 @@ int main(int argc, char **argv)
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window, mr::Prim &pr)
 {
+  double posx, posy;
+  glfwGetCursorPos(window, &posx, &posy);
+
+  int width, height;
+  glfwGetWindowSize(window, &width, &height);
+
+  pr.posx() =   (posx / width) * 2 - 1;
+  pr.posy() = -((posy / height) * 2 - 1);
+
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
