@@ -34,6 +34,10 @@ namespace mr {
     }
 
     ~Shader() {
+      if (_id == 0) {
+        return;
+      }
+
       glDetachShader(_id, _vshd);
       glDeleteShader(_vshd);
 

@@ -17,8 +17,8 @@ namespace mr {
     TopologyType _ttype = TopologyType::eTrimesh;
     std::uint32_t _num_of_instances = 1;
     std::uint32_t _vbuf, _ibuf, _va; // vertex, index buffers, vertex array from the device
-    std::uint32_t _num_of_elements;  // number of elements on the device
-    std::uint32_t _num_of_patches;   // number of patches
+    std::uint32_t _num_of_elements = 0;  // number of elements on the device
+    std::uint32_t _num_of_patches = 0;   // number of patches
 
     Shader shader;
 
@@ -27,6 +27,35 @@ namespace mr {
 
   public:
     Prim() noexcept = default;
+
+  // move semantic
+	Prim(Prim&& other) noexcept {
+		std::swap(_vbuf, other._vbuf);
+		std::swap(_ibuf, other._ibuf);
+		std::swap(_va, other._va);
+		std::swap(shader, other.shader);
+		std::swap(_ttype, other._ttype);
+		std::swap(_num_of_instances, other._num_of_instances);
+		std::swap(_num_of_elements, other._num_of_elements);
+		std::swap(_num_of_patches, other._num_of_patches);
+		std::swap(p[0], other.p[0]);
+		std::swap(p[1], other.p[1]);
+		std::swap(a, other.a);
+	}
+    Prim& operator=(Prim&& other) noexcept {
+		std::swap(_vbuf, other._vbuf);
+		std::swap(_ibuf, other._ibuf);
+		std::swap(_va, other._va);
+		std::swap(shader, other.shader);
+		std::swap(_ttype, other._ttype);
+		std::swap(_num_of_instances, other._num_of_instances);
+		std::swap(_num_of_elements, other._num_of_elements);
+		std::swap(_num_of_patches, other._num_of_patches);
+		std::swap(p[0], other.p[0]);
+		std::swap(p[1], other.p[1]);
+		std::swap(a, other.a);
+        return *this;
+    }
 
     template <typename V, typename I>
       Prim(std::string_view source, std::span<V> vertices, std::span<I> indices, float posx = 0, float posy = 0, float angle = 0) {
