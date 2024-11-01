@@ -3,29 +3,35 @@
 
 #include "app/app.hpp"
 #include "window/window.hpp"
-#include "render/shader.hpp"
 #include "render/prim.hpp"
+#include "render/prim_coolection.hpp"
 
 void processInput(GLFWwindow *window, mr::Prim &pr);
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   glb::exec_path = std::filesystem::absolute(argv[0]).parent_path();
 
   mr::Application app;
   mr::Window *window = app.create_window(800, 600, "CGSGFOREVER");
 
-  mr::Prim prim = mr::create_circle(0, 0, 0.1);
+  mr::PrimCollection prims;
+  prims.add(mr::PrimCollection::PrimType::eCircle, mr::create_circle(0, 0.1, 0.1));
+  prims.add(mr::PrimCollection::PrimType::eCircle, mr::create_circle(0, 0, 0.1));
+  prims.add(mr::PrimCollection::PrimType::eSquare, mr::create_square(0, 0.1, 0.1));
+  prims.add(mr::PrimCollection::PrimType::eSquare, mr::create_square(0, 0, 0.1));
+
+  mr::Prim active_prim = mr::create_circle(0, 0, 0.1);
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while (!glfwWindowShouldClose(window->handle())) {
-    processInput(window->handle(), prim);
+    processInput(window->handle(), active_prim);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    prim.draw();
+    prims.draw();
+    active_prim.draw();
 
     glfwSwapBuffers(window->handle());
     glfwPollEvents();

@@ -43,7 +43,7 @@ namespace mr {
       glDeleteProgram(_id);
     }
 
-    void bind() {
+    void bind() const noexcept {
       glUseProgram(_id);
     }
   };

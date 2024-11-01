@@ -12,7 +12,7 @@ mr::Prim::~Prim() noexcept {
 }
 
 
-void mr::Prim::draw() noexcept {
+void mr::Prim::draw() const noexcept {
   shader.bind();
   glUniform2f(glGetUniformLocation(shader.id(), "translation"), p[0], p[1]);
   glUniform1f(glGetUniformLocation(shader.id(), "rotation"), a);

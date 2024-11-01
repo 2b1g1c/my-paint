@@ -67,7 +67,7 @@ namespace mr {
 
     ~Prim() noexcept;
 
-    void draw() noexcept;
+    void draw() const noexcept;
 
     // getters
     float posx() const { return p[0]; }
