@@ -15,10 +15,10 @@ int main(int argc, char **argv) {
   mr::Window *window = app.create_window(800, 600, "CGSGFOREVER");
 
   mr::PrimCollection prims;
-  prims.add(mr::PrimCollection::PrimType::eCircle, mr::create_circle(0, 0, 0.1));
-  prims.add(mr::PrimCollection::PrimType::eCircle, mr::create_circle(0, 0.2, 0.1));
-  prims.add(mr::PrimCollection::PrimType::eSquare, mr::create_square(0.2, 0, 0.1));
-  prims.add(mr::PrimCollection::PrimType::eSquare, mr::create_square(0.2, 0.2, 0.1));
+  prims.add(mr::create_circle(0, 0, 0.1));
+  prims.add(mr::create_circle(0, 0.2, 0.1));
+  prims.add(mr::create_square(0.2, 0, 0.1));
+  prims.add(mr::create_square(0.2, 0.2, 0.1));
 
   mr::Prim active_prim = mr::create_circle(0, 0, 0.1);
 
