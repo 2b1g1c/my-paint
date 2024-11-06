@@ -6,11 +6,13 @@
 #include "window/window.hpp"
 #include "render/prim.hpp"
 #include "render/prim_coolection.hpp"
+#include "render/timer.hpp"
 
 void processInput(GLFWwindow *window, mr::PrimCollection &prims, mr::Prim &pr);
 
 int main(int argc, char **argv) {
   glb::exec_path = std::filesystem::absolute(argv[0]).parent_path();
+  glb::timer = mr::Timer<float>{};
 
   mr::Application app;
   mr::Window *window = app.create_window(800, 600, "CGSGFOREVER");
