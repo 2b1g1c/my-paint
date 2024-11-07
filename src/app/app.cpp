@@ -9,7 +9,7 @@ mr::Application::Application() noexcept {
   runner_params.callbacks.PostInit = [&]() {
     glEnable(GL_SCISSOR_TEST);
     glClearColor(1, 1, 1, 1);
-    prims.add(mr::create_circle(0.2, 0.2, 0.01));
+    prims.emplace_back(mr::create_circle(0.2, 0.2, 0.01));
   };
   runner_params.callbacks.ShowGui = [&]() { gui(); }; // ShowGui is called every frame, and is used to display the ImGui widgets
   runner_params.callbacks.CustomBackground = [&]() { render(); }; // CustomBackground is called every frame, and is used to display the custom background
