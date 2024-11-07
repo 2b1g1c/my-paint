@@ -16,8 +16,30 @@ CPMFindPackage(
     "GLFW_BULID_DOCS OFF"
 )
 
+if (${CMAKE_HOST_SYSTEM} MATCHES "Linux")
+  CPMAddPackage(
+    NAME nlohmann_json
+    VERSION 3.7.3
+    # the git repo is incredibly large, so we download the archived include directory
+    URL https://github.com/nlohmann/json/releases/download/v3.7.3/include.zip
+    URL_HASH SHA256=87b5884741427220d3a33df1363ae0e8b898099fbc59f1c451113f6732891014
+  )
+
+  if (nlohmann_json_ADDED)
+    add_library(nlohmann_json INTERFACE IMPORTED)
+    target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR}/include)
+  endif()
+endif()
+
+CPMAddPackage(
+  NAME imgui_bundle
+  GIT_TAG main
+  GITHUB_REPOSITORY pthom/imgui_bundle
+)
+
 # set important variables
 set(DEPS_LIBRARIES
+  nlohmann_json
   glfw
 )
 if (WIN32)

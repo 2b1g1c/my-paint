@@ -11,7 +11,7 @@ set(USE_CCACHE YES)
 include(cmake/deps.cmake)
 
 # add executable
-add_executable(${CMAKE_PROJECT_NAME} "")
+imgui_bundle_add_app(${CMAKE_PROJECT_NAME} "")
 add_subdirectory(src)
 
 # dependencies
