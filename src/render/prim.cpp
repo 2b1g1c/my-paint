@@ -676,7 +676,7 @@ mr::Prim mr::create_circle(float posx, float posy, float r) noexcept
   };
 
   std::uint32_t indices[sizeof(vertices) / sizeof(vec2) * 3] {0};
-  for (int i = 1; i <= sizeof(vertices) / sizeof(vec2); i++) {
+  for (int i = 1; i < sizeof(vertices) / sizeof(vec2); i++) {
     indices[i * 3 + 1] = i;
     indices[i * 3 + 2] = i + 1;
   }
