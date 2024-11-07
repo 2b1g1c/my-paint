@@ -41,6 +41,8 @@ int main(int argc, char **argv) {
 }
 
 void processMouse(GLFWwindow* window, mr::PrimCollection &prims, mr::Prim &active_prim) {
+  static bool pressed = false;
+
   double posx, posy;
   glfwGetCursorPos(window, &posx, &posy);
 
@@ -51,8 +53,11 @@ void processMouse(GLFWwindow* window, mr::PrimCollection &prims, mr::Prim &activ
   posy = -((posy / height) * 2 - 1);
   active_prim.posx() = posx;
   active_prim.posy() = posy;
-  if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-    std::cout << "clicked\n";
+
+  if (!pressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    pressed = true;
+  }
+  if (pressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
     prims.add(std::move(active_prim));
     if (prims.size() % 2 == 0) {
       active_prim = mr::create_circle(posx, posy, 0.1);
@@ -60,6 +65,8 @@ void processMouse(GLFWwindow* window, mr::PrimCollection &prims, mr::Prim &activ
     else {
       active_prim = mr::create_square(posx, posy, 0.1);
     }
+
+    pressed = false;
   }
 }
 
