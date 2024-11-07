@@ -23,6 +23,7 @@ int main(int argc, char **argv)
 
   active_prim = mr::create_square(0.2, 0.2, 0.1);
 
+  glEnable(GL_SCISSOR_TEST);
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while (!glfwWindowShouldClose(window->handle())) {

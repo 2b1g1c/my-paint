@@ -3,6 +3,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
   glViewport(0, 0, width, height);
+  glScissor(0, 0, width, height);
 }
 
 mr::Window::Window(int width, int height, std::string_view handle) noexcept
