@@ -6,103 +6,15 @@
 #include "render/prim.hpp"
 #include "render/prim_coolection.hpp"
 #include "render/timer.hpp"
-#include "window/window.hpp"
 
-void processInput(GLFWwindow *window, mr::PrimCollection &prims, mr::Prim &pr);
+#include "immapp/immapp.h"
+#include "imgui.h"
 
 int main(int argc, char **argv)
 {
   glb::exec_path = std::filesystem::absolute(argv[0]).parent_path();
   glb::timer = mr::Timer<float> {};
 
-  mr::Application app;
-  mr::Window *window = app.create_window(800, 600, "CGSGFOREVER");
-
-  mr::PrimCollection prims;
-  mr::Prim active_prim;
-
-  active_prim = mr::create_circle(0.2, 0.2, 0.01);
-
-  glEnable(GL_SCISSOR_TEST);
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-  while (!glfwWindowShouldClose(window->handle())) {
-    processInput(window->handle(), prims, active_prim);
-
-    glClearColor(1, 1, 1, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    prims.draw();
-    active_prim.draw();
-
-    glfwSwapBuffers(window->handle());
-    glfwPollEvents();
-  }
-
-  return 0;
-}
-
-void processMouse(GLFWwindow *window, mr::PrimCollection &prims,
-                  mr::Prim &active_prim)
-{
-  static bool pressed = false;
-  static auto create_shape = [&prims](double posx, double posy) {
-    return mr::create_circle(posx, posy, 0.01);
-  };
-
-  double posx, posy;
-  glfwGetCursorPos(window, &posx, &posy);
-
-  int width, height;
-  glfwGetWindowSize(window, &width, &height);
-
-  posx = (posx / width) * 2 - 1;
-  posy = -((posy / height) * 2 - 1);
-  active_prim.posx() = posx;
-  active_prim.posy() = posy;
-
-  if (!pressed &&
-      glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-    pressed = true;
-  }
-  if (pressed) {
-    prims.add(std::move(active_prim));
-    active_prim = create_shape(posx, posy);
-  }
-  if (pressed &&
-      glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-    pressed = false;
-  }
-}
-
-void processInput(GLFWwindow *window, mr::PrimCollection &prims,
-                  mr::Prim &active_prim)
-{
-  processMouse(window, prims, active_prim);
-
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, true);
-  }
-  else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-           glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-    active_prim.posx() -= 0.001;
-  }
-  else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-           glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-    active_prim.posx() += 0.001;
-  }
-  else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-           glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-    active_prim.posy() -= 0.001;
-  }
-  else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-           glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-    active_prim.posy() += 0.001;
-  }
-  else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-    active_prim.rot() += 0.001;
-  }
-  else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-    active_prim.rot() -= 0.001;
-  }
+  auto app = mr::Application();
+  app.run();
 }

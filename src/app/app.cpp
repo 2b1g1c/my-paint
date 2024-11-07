@@ -1,5 +1,21 @@
 #include "app.hpp"
 
+mr::Application::Application() noexcept {
+  runner_params.fpsIdling.enableIdling = false; // disable idling so that the shader runs at full speed
+  runner_params.appWindowParams.windowGeometry.size = {4000, 2000};
+  runner_params.appWindowParams.windowTitle = "CGSGFOREVER";
+  runner_params.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow; // Do not create a default ImGui window, so that the shader occupies the whole display
+                                                                                                                // PostInit is called after the ImGui context is created, and after OpenGL is initialized
+  runner_params.callbacks.PostInit = [&]() {
+    glEnable(GL_SCISSOR_TEST);
+    glClearColor(1, 1, 1, 1);
+    prims.add(mr::create_circle(0.2, 0.2, 0.01));
+  };
+  runner_params.callbacks.ShowGui = [&]() { gui(); }; // ShowGui is called every frame, and is used to display the ImGui widgets
+  runner_params.callbacks.CustomBackground = [&]() { render(); }; // CustomBackground is called every frame, and is used to display the custom background
+  addons_params.withMarkdown = true;
+}
+
 void APIENTRY glDebugOutput(std::uint32_t source, std::uint32_t type,
                             std::uint32_t id, std::uint32_t severity,
                             int length, const char *message,
@@ -80,38 +96,3 @@ void APIENTRY glDebugOutput(std::uint32_t source, std::uint32_t type,
 
   std::cout << Buf;
 } /* End of 'glDebugOutput' function */
-
-mr::Application::Application() noexcept
-{
-  glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#ifdef __APPLE__
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
-  // to make sure no reallocation will be present
-  _windows.reserve(100);
-}
-
-mr::Window *mr::Application::create_window(int width, int height,
-                                           std::string_view handle)
-{
-  _windows.emplace_back(width, height, handle);
-  if (!is_glad_inited) {
-    is_glad_inited = true;
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-      std::cout << "Failed to initialize GLAD" << std::endl;
-      exit(30);
-    }
-    /* Debug output */
-    glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback(glDebugOutput, NULL);
-    glDebugMessageControl(
-      GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-  }
-  return _windows.data() + _windows.size() - 1;
-}

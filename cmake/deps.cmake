@@ -6,16 +6,6 @@ file(
 )
 include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
 
-CPMFindPackage(
-  NAME glfw3
-  GITHUB_REPOSITORY glfw/glfw
-  GIT_TAG 3.4
-  OPTIONS
-    "GLFW_BUILD_TESTS OFF"
-    "GLFW_BUILD_EXAMPLES OFF"
-    "GLFW_BULID_DOCS OFF"
-)
-
 if (${CMAKE_HOST_SYSTEM} MATCHES "Linux")
   CPMAddPackage(
     NAME nlohmann_json
@@ -40,7 +30,6 @@ CPMAddPackage(
 # set important variables
 set(DEPS_LIBRARIES
   nlohmann_json
-  glfw
 )
 if (WIN32)
   set(DEPS_LIBRARIES ${DEPS_LIBRARIES} opengl32)
