@@ -24,45 +24,49 @@ namespace mr {
 
     float p[2] = {}; // pos
     float a = 0;     // angle
+    float s = 1;     // scale
 
   public:
     Prim() noexcept = default;
 
-  // move semantic
-	Prim(Prim&& other) noexcept {
-		std::swap(_vbuf, other._vbuf);
-		std::swap(_ibuf, other._ibuf);
-		std::swap(_va, other._va);
-		std::swap(shader, other.shader);
-		std::swap(_ttype, other._ttype);
-		std::swap(_num_of_instances, other._num_of_instances);
-		std::swap(_num_of_elements, other._num_of_elements);
-		std::swap(_num_of_patches, other._num_of_patches);
-		std::swap(p[0], other.p[0]);
-		std::swap(p[1], other.p[1]);
-		std::swap(a, other.a);
-	}
+    // move semantic
+    Prim(Prim&& other) noexcept {
+      std::swap(_vbuf, other._vbuf);
+      std::swap(_ibuf, other._ibuf);
+      std::swap(_va, other._va);
+      std::swap(shader, other.shader);
+      std::swap(_ttype, other._ttype);
+      std::swap(_num_of_instances, other._num_of_instances);
+      std::swap(_num_of_elements, other._num_of_elements);
+      std::swap(_num_of_patches, other._num_of_patches);
+      std::swap(p[0], other.p[0]);
+      std::swap(p[1], other.p[1]);
+      std::swap(a, other.a);
+      std::swap(s, other.s);
+    }
     Prim& operator=(Prim&& other) noexcept {
-		std::swap(_vbuf, other._vbuf);
-		std::swap(_ibuf, other._ibuf);
-		std::swap(_va, other._va);
-		std::swap(shader, other.shader);
-		std::swap(_ttype, other._ttype);
-		std::swap(_num_of_instances, other._num_of_instances);
-		std::swap(_num_of_elements, other._num_of_elements);
-		std::swap(_num_of_patches, other._num_of_patches);
-		std::swap(p[0], other.p[0]);
-		std::swap(p[1], other.p[1]);
-		std::swap(a, other.a);
-        return *this;
+      std::swap(_vbuf, other._vbuf);
+      std::swap(_ibuf, other._ibuf);
+      std::swap(_va, other._va);
+      std::swap(shader, other.shader);
+      std::swap(_ttype, other._ttype);
+      std::swap(_num_of_instances, other._num_of_instances);
+      std::swap(_num_of_elements, other._num_of_elements);
+      std::swap(_num_of_patches, other._num_of_patches);
+      std::swap(p[0], other.p[0]);
+      std::swap(p[1], other.p[1]);
+      std::swap(a, other.a);
+      std::swap(s, other.s);
+      return *this;
     }
 
     template <typename V, typename I>
-      Prim(std::string_view source, std::span<V> vertices, std::span<I> indices, float posx = 0, float posy = 0, float angle = 0) {
+      Prim(std::string_view source, std::span<V> vertices, std::span<I> indices, float posx = 0, float posy = 0, float angle = 0, float scale = 1) {
         shader = mr::Shader(source);
         p[0] = posx;
         p[1] = posy;
         a = angle;
+        s = scale;
 
         if (vertices.size() != 0) {
           glGenVertexArrays(1, &_va);
@@ -105,6 +109,8 @@ namespace mr {
     float& posy() { return p[1]; }
     float rot() const { return a; }
     float& rot() { return a; }
+    float scale() const { return s; }
+    float& scale() { return s; }
   };
 
   Prim create_circle(float posx, float poxy, float r) noexcept;

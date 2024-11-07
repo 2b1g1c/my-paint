@@ -16,6 +16,7 @@ void mr::Prim::draw() const noexcept {
   shader.bind();
   glUniform2f(glGetUniformLocation(shader.id(), "translation"), p[0], p[1]);
   glUniform1f(glGetUniformLocation(shader.id(), "rotation"), a);
+  glUniform1f(glGetUniformLocation(shader.id(), "scale"), s);
 
   glBindVertexArray(_va);
 
@@ -37,7 +38,6 @@ mr::Prim mr::create_circle(float posx, float posy, float r) noexcept {
   using vec2 = float[2];
   // (2pi / 0.01) vertices
   vec2 vertices[] = {
-    {0.0, 0.0},
     {1.0, -0.01},
     {0.9999500004166653, 0.009999833334166664},
     {0.9998000066665778, 0.01999866669333308},
@@ -669,21 +669,13 @@ mr::Prim mr::create_circle(float posx, float posy, float r) noexcept {
     {0.9999949269133749, -0.003185301793227696},
   };
 
-  std::for_each(
-      std::execution::par_unseq,
-      vertices, vertices + sizeof(vertices) / sizeof(vec2),
-      [r, posx, posy](vec2 &v) {
-        v[0] = v[0] * r;
-        v[1] = v[1] * r;
-      });
-
-  std::uint32_t indices[629 * 3] {0};
-  for (int i = 1; i <= 629; i++) {
+  std::uint32_t indices[sizeof(vertices) / sizeof(vec2) * 3] {0};
+  for (int i = 1; i <= sizeof(vertices) / sizeof(vec2); i++) {
     indices[i * 3 + 1] = i;
     indices[i * 3 + 2] = i + 1;
   }
 
-  return mr::Prim("default", std::span<vec2>(vertices), std::span<std::uint32_t>(indices), posx, posy);
+  return mr::Prim("default", std::span<vec2>(vertices), std::span<std::uint32_t>(indices), posx, posy, 0, r);
 }
 
 mr::Prim mr::create_square(float posx, float posy, float a) noexcept {
@@ -696,18 +688,10 @@ mr::Prim mr::create_square(float posx, float posy, float a) noexcept {
     {-0.5f,  0.5f}, // top left
   };
 
-  std::for_each(
-      std::execution::par_unseq,
-      vertices, vertices + sizeof(vertices) / sizeof(vec2),
-      [a](vec2 &v) {
-        v[0] = v[0] * a;
-        v[1] = v[1] * a;
-      });
-
   unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3, // first Triangle
     1, 2, 3  // second Triangle
   };
 
-  return mr::Prim("default", std::span<vec2>{vertices}, std::span<unsigned int>{indices}, posx, posy);
+  return mr::Prim("default", std::span<vec2>{vertices}, std::span<unsigned int>{indices}, posx, posy, 0, a);
 }
