@@ -16,14 +16,14 @@ namespace mr {
 
     TopologyType _ttype = TopologyType::eTrimesh;
     std::uint32_t _num_of_instances = 1;
-    std::uint32_t _vbuf, _ibuf, _va; // vertex, index buffers, vertex array from the device
-    std::uint32_t _num_of_elements = 0;  // number of elements on the device
-    std::uint32_t _num_of_patches = 0;   // number of patches
+    std::uint32_t _vbuf = 0, _ibuf = 0, _va = 0; // vertex, index buffers, vertex array from the device
+    std::uint32_t _num_of_elements = 0;          // number of elements on the device
+    std::uint32_t _num_of_patches = 0;           // number of patches
 
     Shader shader;
 
-    float p[2]; // pos
-    float a; // angle
+    float p[2] = {}; // pos
+    float a = 0;     // angle
 
   public:
     Prim() noexcept = default;
