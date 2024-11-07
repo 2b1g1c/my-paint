@@ -5,17 +5,15 @@
 
 namespace mr {
   class Application {
-  private:
-    std::vector<Window> _windows;
-    bool is_glad_inited = false;
+    private:
+      std::vector<Window> _windows;
+      bool is_glad_inited = false;
 
-  public:
-    Application() noexcept;
+    public:
+      Application() noexcept;
 
-    Window* create_window(int width, int height, std::string_view handle);
+      Window* create_window(int width, int height, std::string_view handle);
 
-    ~Application() noexcept {
-      glfwTerminate();
-    }
+      ~Application() noexcept { glfwTerminate(); }
   };
-}
+} // namespace mr

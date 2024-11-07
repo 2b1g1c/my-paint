@@ -4,7 +4,8 @@
 
 #include "render/shader.hpp"
 
-std::vector<char> read_file(std::filesystem::path source) {
+std::vector<char> read_file(std::filesystem::path source)
+{
   std::vector<char> res;
   std::ifstream input = std::ifstream(source);
 
@@ -24,15 +25,20 @@ std::vector<char> read_file(std::filesystem::path source) {
   return res;
 }
 
-std::vector<char> read_vert(std::string_view source_dir) {
-  return read_file(glb::exec_path / "bin" / "shaders" / source_dir / "vert.glsl");
+std::vector<char> read_vert(std::string_view source_dir)
+{
+  return read_file(glb::exec_path / "bin" / "shaders" / source_dir /
+                   "vert.glsl");
 }
 
-std::vector<char> read_frag(std::string_view source_dir) {
-  return read_file(glb::exec_path / "bin" / "shaders" / source_dir / "frag.glsl");
+std::vector<char> read_frag(std::string_view source_dir)
+{
+  return read_file(glb::exec_path / "bin" / "shaders" / source_dir /
+                   "frag.glsl");
 }
 
-mr::Shader::Shader(std::string_view source) {
+mr::Shader::Shader(std::string_view source)
+{
   std::vector<char> raw;
 
   // vertex shader

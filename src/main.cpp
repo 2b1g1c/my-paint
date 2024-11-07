@@ -3,22 +3,23 @@
 #include "pch.hpp"
 
 #include "app/app.hpp"
-#include "window/window.hpp"
 #include "render/prim.hpp"
 #include "render/prim_coolection.hpp"
 #include "render/timer.hpp"
+#include "window/window.hpp"
 
 void processInput(GLFWwindow *window, mr::PrimCollection &prims, mr::Prim &pr);
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   glb::exec_path = std::filesystem::absolute(argv[0]).parent_path();
-  glb::timer = mr::Timer<float>{};
+  glb::timer = mr::Timer<float> {};
 
   mr::Application app;
   mr::Window *window = app.create_window(800, 600, "CGSGFOREVER");
 
   mr::PrimCollection prims;
-  mr::Prim active_prim = mr::create_square(0.0, 0.0, 0.1);
+  mr::Prim active_prim;
 
   active_prim = mr::create_square(0.2, 0.2, 0.1);
 
@@ -40,8 +41,13 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-void processMouse(GLFWwindow* window, mr::PrimCollection &prims, mr::Prim &active_prim) {
+void processMouse(GLFWwindow *window, mr::PrimCollection &prims,
+                  mr::Prim &active_prim)
+{
   static bool pressed = false;
+  static auto create_shape = [&prims](double posx, double posy) {
+    return mr::create_square(posx, posy, 0.1);
+  };
 
   double posx, posy;
   glfwGetCursorPos(window, &posx, &posy);
@@ -49,47 +55,47 @@ void processMouse(GLFWwindow* window, mr::PrimCollection &prims, mr::Prim &activ
   int width, height;
   glfwGetWindowSize(window, &width, &height);
 
-  posx =   (posx / width) * 2 - 1;
+  posx = (posx / width) * 2 - 1;
   posy = -((posy / height) * 2 - 1);
   active_prim.posx() = posx;
   active_prim.posy() = posy;
 
-  if (!pressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+  if (!pressed &&
+      glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
     pressed = true;
   }
-  if (pressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+  if (pressed) {
     prims.add(std::move(active_prim));
-    if (prims.size() % 2 == 0) {
-      active_prim = mr::create_circle(posx, posy, 0.1);
-    }
-    else {
-      active_prim = mr::create_square(posx, posy, 0.1);
-    }
-
+    active_prim = create_shape(posx, posy);
+  }
+  if (pressed &&
+      glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
     pressed = false;
   }
 }
 
-void processInput(GLFWwindow *window, mr::PrimCollection &prims, mr::Prim &active_prim) {
+void processInput(GLFWwindow *window, mr::PrimCollection &prims,
+                  mr::Prim &active_prim)
+{
   processMouse(window, prims, active_prim);
 
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
   else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-      glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+           glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
     active_prim.posx() -= 0.001;
   }
   else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-      glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+           glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
     active_prim.posx() += 0.001;
   }
   else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-      glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+           glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
     active_prim.posy() -= 0.001;
   }
   else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
-      glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+           glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
     active_prim.posy() += 0.001;
   }
   else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
@@ -99,4 +105,3 @@ void processInput(GLFWwindow *window, mr::PrimCollection &prims, mr::Prim &activ
     active_prim.rot() -= 0.001;
   }
 }
-
