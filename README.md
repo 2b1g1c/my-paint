@@ -16,3 +16,8 @@ ImGUI Bundle is installed (if not found) via [CPM.cmake](https://github.com/cpm-
   cmake --build build
 ```
 Build files will be written to './build' directory
+
+## Development
+Gui elements should be placed inside mr::Application::gui function <br>
+Render should be placed inside mr::Application::render function
+Input handling should be placed inside mr::Application::input function
