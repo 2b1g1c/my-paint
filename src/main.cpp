@@ -21,7 +21,7 @@ int main(int argc, char **argv)
   mr::PrimCollection prims;
   mr::Prim active_prim;
 
-  active_prim = mr::create_square(0.2, 0.2, 0.1);
+  active_prim = mr::create_circle(0.2, 0.2, 0.01);
 
   glEnable(GL_SCISSOR_TEST);
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   while (!glfwWindowShouldClose(window->handle())) {
     processInput(window->handle(), prims, active_prim);
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(1, 1, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
     prims.draw();
@@ -47,7 +47,7 @@ void processMouse(GLFWwindow *window, mr::PrimCollection &prims,
 {
   static bool pressed = false;
   static auto create_shape = [&prims](double posx, double posy) {
-    return mr::create_square(posx, posy, 0.1);
+    return mr::create_circle(posx, posy, 0.01);
   };
 
   double posx, posy;
