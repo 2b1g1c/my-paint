@@ -5,6 +5,7 @@
 #include "immapp/runner.h"
 #include "pch.hpp"
 
+#include "render/prim.hpp"
 #include "render/prim_coolection.hpp"
 
 namespace mr {
@@ -23,19 +24,53 @@ namespace mr {
         return r;
       }
 
+      ImVec2 scaled_mouse_pos() const noexcept
+      {
+        auto& io = ImGui::GetIO();
+        ImVec2 mouse_pos = ImGui::GetMousePos();
+        auto r = ImVec2(
+            mouse_pos.x * io.DisplayFramebufferScale.x,
+            mouse_pos.y * io.DisplayFramebufferScale.y);
+        return r;
+      }
+
     public:
       Application() noexcept;
 
       ~Application() noexcept = default;
 
-      void render() const noexcept {
-        ImVec2 displaySize = scaled_display_size();
-        glViewport(0, 0, (GLsizei)displaySize.x, (GLsizei)displaySize.y);
+      void input() noexcept {
+        ImVec2 display_size = scaled_display_size();
+        ImVec2 mouse_pos = scaled_mouse_pos();
+        mouse_pos.x =  (2 * (mouse_pos.x / display_size.x) - 1);
+        mouse_pos.y = -(2 * (mouse_pos.y / display_size.y) - 1);
+
+        auto& io = ImGui::GetIO();
+
+        /*
+           if (ImGui::IsKeyDown(ImGuiKey('S'))) {
+           }
+        */
+
+        if (ImGui::IsMouseDown(0)) /* LMB */ {
+          prims.emplace_back(mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
+        }
+      }
+
+      void render() noexcept {
+        ImVec2 display_size = scaled_display_size();
+        ImVec2 mouse_pos = scaled_mouse_pos();
+        prims.back().posx() =  (2 * (mouse_pos.x / display_size.x) - 1);
+        prims.back().posy() = -(2 * (mouse_pos.y / display_size.y) - 1);
+
+        input();
+
+        glViewport(0, 0, (GLsizei)display_size.x, (GLsizei)display_size.y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         prims.draw();
       }
 
-      void gui() const noexcept {
+      void gui() noexcept {
         ImGui::Begin("Debug info");
         ImGui::Text("FPS: %.1f", HelloImGui::FrameRate());
         ImGui::End();
