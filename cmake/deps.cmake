@@ -12,6 +12,14 @@ CPMAddPackage(
   GITHUB_REPOSITORY pthom/imgui_bundle
 )
 
+if (NOT TARGET nlohmann_json)
+  CPMAddPackage(
+    NAME nlohmann_json
+    GIT_TAG develop
+    GITHUB_REPOSITORY nlohmann/json
+  )
+endif()
+
 # set important variables
 set(DEPS_LIBRARIES
   nlohmann_json
