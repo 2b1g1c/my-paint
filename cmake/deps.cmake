@@ -10,6 +10,8 @@ CPMAddPackage(
   NAME imgui_bundle
   GIT_TAG main
   GITHUB_REPOSITORY pthom/imgui_bundle
+  OPTIONS
+    "HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED ON"
 )
 
 if (NOT TARGET nlohmann_json)
