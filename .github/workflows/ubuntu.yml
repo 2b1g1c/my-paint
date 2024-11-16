@@ -38,12 +38,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-cpm-a
 
-    # Download GLFW dependencies
-    - name: Setup GLFW deps
+    # Install GLFW
+    - name: Setup GLFW
       run: |
         sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
         sudo apt-get update
-        sudo apt-get build-dep glfw3
+        sudo apt install libglfw3-dev
 
     - name: Configure CMake (GCC)
       if: ${{ matrix.cpp_compiler == 'g++' }}
