@@ -43,7 +43,7 @@ jobs:
       run: |
         sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
         sudo apt-get update
-        sudo apt install libglfw3-dev
+        sudo apt install libglfw3-dev libtbb-dev
 
     - name: Configure CMake (GCC)
       if: ${{ matrix.cpp_compiler == 'g++' }}
