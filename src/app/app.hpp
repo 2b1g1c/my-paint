@@ -11,6 +11,9 @@
 namespace mr {
   class Application {
     private:
+      bool show_window1 = true;
+      bool show_window2 = false;
+
       HelloImGui::RunnerParams runner_params;
       ImmApp::AddOnsParams addons_params;
       mr::PrimCollection prims;
@@ -50,7 +53,7 @@ namespace mr {
         /*
            if (ImGui::IsKeyDown(ImGuiKey('S'))) {
            }
-        */
+           */
 
         if (ImGui::IsMouseDown(0)) /* LMB */ {
           prims.emplace_back(mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
@@ -70,11 +73,7 @@ namespace mr {
         prims.draw();
       }
 
-      void gui() noexcept {
-        ImGui::Begin("Debug info");
-        ImGui::Text("FPS: %.1f", HelloImGui::FrameRate());
-        ImGui::End();
-      }
+      void gui() noexcept;
 
       void run() noexcept {
         ImmApp::Run(runner_params, addons_params);

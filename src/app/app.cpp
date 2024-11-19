@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "app.hpp"
 
 mr::Application::Application() noexcept {
@@ -14,6 +16,66 @@ mr::Application::Application() noexcept {
   runner_params.callbacks.ShowGui = [&]() { gui(); }; // ShowGui is called every frame, and is used to display the ImGui widgets
   runner_params.callbacks.CustomBackground = [&]() { render(); }; // CustomBackground is called every frame, and is used to display the custom background
   addons_params.withMarkdown = true;
+}
+
+void mr::Application::gui() noexcept {
+  static float my_color[4] = {0.0f, 1.0f, 0.0f, 1.0f};
+  if (this->show_window1) {
+    ImGui::Begin("Are u host?", &this->show_window1);
+    if (ImGui::Button("Yes")) {
+      this->show_window1 = false;
+      this->show_window2 = true;
+    }
+    ImGui::End();
+  }
+
+  if (this->show_window2) {
+    ImVec2 display_size = scaled_display_size();
+    ImVec2 mouse_pos = scaled_mouse_pos();
+    mouse_pos.x =  (2 * (mouse_pos.x / display_size.x) - 1);
+    mouse_pos.y = -(2 * (mouse_pos.y / display_size.y) - 1);
+    ImGui::Begin("Tools", &this->show_window2, ImGuiWindowFlags_MenuBar);
+    if (ImGui::BeginMenuBar()) {
+      if (ImGui::BeginMenu("File")) {
+        if (ImGui::MenuItem("Open..")) {
+          /* Do stuff */
+        }
+        if (ImGui::MenuItem("Save")) {
+          /* Do stuff */
+        }
+        if (ImGui::MenuItem("Close")) {
+          this->show_window2 = false;
+          ImGui::End();
+        }
+        ImGui::EndMenu();
+      }
+      ImGui::EndMenuBar();
+
+      if (ImGui::CollapsingHeader("Colour")) {
+        ImGui::ColorEdit4("Color", my_color);
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(my_color[0], my_color[1], my_color[2], my_color[3]));
+        ImGui::PopStyleColor();
+        float samples[100];
+        for (int n = 0; n < 100; n++) {
+          samples[n] = sinf(n * 0.2f + ImGui::GetTime() * 1.5f);
+        }
+        ImGui::PlotLines("Samples", samples, 100);
+      }
+      if (ImGui::CollapsingHeader("Drawing materials")) {
+        if (ImGui::Button("Circle")) {
+          prims.emplace_back(mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
+        }
+        if (ImGui::Button("Square")) {
+          prims.emplace_back(mr::create_square(mouse_pos.x, mouse_pos.y, 0.01));
+        }
+        if (ImGui::Button("Ellipse")) {
+          prims.emplace_back(mr::create_square(mouse_pos.x, mouse_pos.y, 0.04));
+        }
+      }
+    }
+
+    ImGui::End();
+  }
 }
 
 void APIENTRY glDebugOutput(std::uint32_t source, std::uint32_t type,
