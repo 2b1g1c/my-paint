@@ -26,7 +26,7 @@ file(
 	DOWNLOAD
 	https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/httplib.h
 	${CMAKE_CURRENT_BINARY_DIR}/_deps/cpp-httplib-src/httplib/httplib.h
-	EXPECTED_HASH SHA256=27e32e1f8950b5e5760ee7c4f7d480d2950812639d8f892e3ff6f590ffb1bf61
+	EXPECTED_HASH SHA256=bcbc2e9a853be62c11047d3a17d5e8faf6b54acf25943d154c0330d22500fb53
 )
 add_library(httplib INTERFACE)
 target_include_directories(httplib INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/_deps/cpp-httplib-src)
