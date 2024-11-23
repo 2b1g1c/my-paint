@@ -22,9 +22,19 @@ if (NOT TARGET nlohmann_json)
   )
 endif()
 
+file(
+	DOWNLOAD
+	https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/httplib.h
+	${CMAKE_CURRENT_BINARY_DIR}/_deps/cpp-httplib-src/httplib/httplib.h
+	EXPECTED_HASH SHA256=27e32e1f8950b5e5760ee7c4f7d480d2950812639d8f892e3ff6f590ffb1bf61
+)
+add_library(httplib INTERFACE)
+target_include_directories(httplib INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/_deps/cpp-httplib-src)
+
 # set important variables
 set(DEPS_LIBRARIES
   nlohmann_json
+  httplib
 )
 
 set(DEPS_INCLUDE_DIRS

@@ -4,7 +4,10 @@
 #include <iostream>
 #include <span>
 #include <vector>
+#include <string>
+#include <cstring>
 
+#include <httplib/httplib.h>
 #include <glad/glad.h>
 
 #include "render/timer.hpp"

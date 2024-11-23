@@ -7,6 +7,7 @@
 
 #include "render/prim.hpp"
 #include "render/prim_coolection.hpp"
+#include "server/server.hpp"
 
 namespace mr {
   class Application {
@@ -15,6 +16,8 @@ namespace mr {
       ImmApp::AddOnsParams addons_params;
       mr::PrimCollection prims;
       bool is_glad_inited = false;
+      Server _server = get_self_ip();
+      std::jthread _thread;
 
       ImVec2 scaled_display_size() const noexcept
       {
@@ -37,7 +40,10 @@ namespace mr {
     public:
       Application() noexcept;
 
-      ~Application() noexcept = default;
+      ~Application() noexcept {
+        _server.stop();
+        _thread.request_stop();
+      }
 
       void input() noexcept {
         ImVec2 display_size = scaled_display_size();
@@ -73,6 +79,7 @@ namespace mr {
       void gui() noexcept {
         ImGui::Begin("Debug info");
         ImGui::Text("FPS: %.1f", HelloImGui::FrameRate());
+        // call a method of Server if we wanna connect to existing canvas
         ImGui::End();
       }
 

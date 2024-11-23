@@ -12,6 +12,13 @@ namespace mr {
     public:
       PrimCollection() noexcept = default;
 
+      void emplace_back(mr::Prim other) noexcept {
+        // draw func
+        
+        std::vector<mr::Prim>::emplace_back(std::move(other));
+        // sync
+      }
+
       void draw() const noexcept;
   };
 } // namespace mr

@@ -1,6 +1,17 @@
 #include "app.hpp"
+#include <thread>
 
 mr::Application::Application() noexcept {
+
+
+  _thread = std::jthread(
+    [this]() {
+      _server.server_func();
+    }
+    );
+  //_thread.join();
+
+
   runner_params.fpsIdling.enableIdling = false; // disable idling so that the shader runs at full speed
   runner_params.appWindowParams.windowGeometry.size = {4000, 2000};
   runner_params.appWindowParams.windowTitle = "CGSGFOREVER";
