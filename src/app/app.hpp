@@ -59,7 +59,7 @@ namespace mr {
         */
 
         if (ImGui::IsMouseDown(0)) /* LMB */ {
-          prims.emplace_back(mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
+          prims.emplace_back(*this, mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
         }
       }
 

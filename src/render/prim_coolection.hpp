@@ -8,16 +8,11 @@
 #include "prim.hpp"
 
 namespace mr {
+  class Application;
   class PrimCollection : public std::vector<Prim> {
     public:
       PrimCollection() noexcept = default;
-
-      void emplace_back(mr::Prim other) noexcept {
-        // draw func
-        
-        std::vector<mr::Prim>::emplace_back(std::move(other));
-        // sync
-      }
+      void emplace_back(mr::Application &app, mr::Prim other) noexcept;
 
       void draw() const noexcept;
   };
