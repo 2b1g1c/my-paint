@@ -9,6 +9,7 @@
 
 #include <httplib/httplib.h>
 #include <glad/glad.h>
+#include <nlohmann/json.hpp>
 
 #include "render/timer.hpp"
 

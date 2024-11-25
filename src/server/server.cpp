@@ -12,20 +12,92 @@
 #include "server/server.hpp"
 
 
+void Server::append_ip(std::string vec_vals) {
+    // parse json of vec_vals
+}
+
+
 void Server::connect_to_canvas(std::string val) {
   // get/post reqs
-  _srv.listen(_ip, 4747);
+  httplib::Client cli(val, 4747);
+  cli.Post("/cgsg/my_ip", _ip, "text/plain"); // send itself ip
+  
+  auto res = cli.Get("/cgsg/cli"); // refresh vector of _clients with this user
+  append_ip(res->body);
+  add_new_user();
+}
+
+
+void Server::add_new_user() {
+  for (int i = 0; i < _clients.size(); i++) {
+      httplib::Client cli(_clients[i], 4747);
+      // json data instead of second param
+      auto res = cli.Post("/cgsg/new_user", _clients[i], "text/plain");
+  }
 }
 
 
 void Server::server_func() {
   // HTTP
 
-  _srv.Get("/cgsg", [](const httplib::Request &, httplib::Response &res) {
+  /*_srv.Get("/cgsg", [](const httplib::Request &, httplib::Response &res) {
     // send data to draw
     res.set_content("Hello World!", "text/plain");
+  });*/
+
+  _srv.Get("/cgsg/cli", [this](const httplib::Request &, httplib::Response &res) {
+    // _clients -> json
+    nlohmann::json j;
+    // Create an array for saving ip adresses
+    j["ip"] = nlohmann::json::array();
+    for (int i = 0; i < _clients.size(); i++) {
+      j["ip"].push_back(_clients[i]);
+    }
+    std::string json_str = j.dump();
+    res.set_content("", "application/json");
   });
+
+  /*
+  _srv.Get("/cgsg/in", [](const httplib::Request &, httplib::Response &res) {
+    // _clients -> json
+    res.set_content("", "application/json");
+  });
+  */
+  
+  _srv.Post("/cgsg/draw", [](const httplib::Request &req, httplib::Response &res) {
+    res.set_content("POST", "text/plain");
+    // req->body - there is json of new object for drawing
+    //draw func
+  });
+
+  _srv.Post("/cgsg/draw", [this](const httplib::Request &req, httplib::Response &res) {
+    res.set_content("POST", "text/plain");
+    // req->body - the  re is json with ip of new system
+    _clients.push_back(res.body);
+  });
+
+  _srv.Post("/cgsg/new_user", [this](const httplib::Request &req, httplib::Response &res) {
+    res.set_content("POST", "text/plain");
+    // req->body - the  re is json with ip of new system
+    _clients.push_back(res.body);
+  });
+
+  _srv.Post("/cgsg/my_ip", [this](const httplib::Request &req, httplib::Response &res) {
+    res.set_content("POST", "text/plain");
+    // req->body - the  re is json with ip of new system
+    _clients.push_back(res.body);
+  });
+  
+
   _srv.listen(_ip, 4747);
+}
+
+void Server::draw_object() {
+    for (int i = 0; i < _clients.size(); i++) {
+        httplib::Client cli(_clients[i], 4747);
+        // json data instead of second param
+        auto res = cli.Post("/cgsg/draw", "", "application/json");
+    }
 }
 
 

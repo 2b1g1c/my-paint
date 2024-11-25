@@ -86,5 +86,9 @@ namespace mr {
       void run() noexcept {
         ImmApp::Run(runner_params, addons_params);
       }
+
+      void draw_object() {
+        _server.draw_object();
+      }
   };
 } // namespace mr
