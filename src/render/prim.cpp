@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <execution>
+#include <string>
+#include "prim.hpp"
 
 // #include <CDT.h>
 
@@ -687,7 +689,8 @@ mr::Prim mr::create_circle(float posx, float posy, float r) noexcept
                   posx,
                   posy,
                   0,
-                  r);
+                  r,
+                  mr::Prim::PrimType::eCircle);
 }
 
 mr::Prim mr::create_square(float posx, float posy, float a) noexcept
@@ -717,5 +720,37 @@ mr::Prim mr::create_square(float posx, float posy, float a) noexcept
                   posx,
                   posy,
                   0,
-                  a);
+                  a,
+                  mr::Prim::PrimType::eSquare);
+}
+
+std::string mr::prim_to_json(const mr::Prim &other) {
+  nlohmann::json j;
+  // Create an array for saving ip adresses
+  j["px"] = other.posx();
+  j["py"] = other.posy();
+  j["a"] = other.rot();
+  j["s"] = other.scale();
+  j["_ptype"] = other.ptype();
+  std::string json_str = j.dump();
+  return json_str;
+}
+
+mr::Prim mr::prim_from_json(const std::string &str) {
+  nlohmann::json j = nlohmann::json::parse(str);
+  float px = j["px"];
+  float py = j["py"];
+  float a = j["a"];
+  float s = j["s"];
+  mr::Prim::PrimType ptype = j["_ptype"];
+  mr::Prim res;
+  switch (ptype) {
+    case mr::Prim::PrimType::eCircle:
+      res = mr::create_circle(px, py, s);
+      break;
+    case mr::Prim::PrimType::eSquare:
+      res = mr::create_square(px, py, a);
+      break;
+  }
+  return res;
 }

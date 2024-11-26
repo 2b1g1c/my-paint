@@ -13,6 +13,8 @@ namespace mr {
   class PrimCollection : public std::vector<Prim> {
     public:
       PrimCollection() noexcept = default;
+
+      using std::vector<Prim>::emplace_back;
       void emplace_back(mr::Application &app, mr::Prim other) noexcept;
 
       void draw() const noexcept;

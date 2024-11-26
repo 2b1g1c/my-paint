@@ -1,3 +1,5 @@
+#include <string>
+#include "render/prim.hpp"
 #ifdef _WIN32
     #include <winsock2.h>
     #pragma comment(lib, "ws2_32.lib") // link a library for Winsock
@@ -9,35 +11,59 @@
     #include <unistd.h>
 #endif
 
+#include "app/app.hpp"
 #include "server/server.hpp"
 
 
-void Server::append_ip(std::string vec_vals) {
-    // parse json of vec_vals
+void mr::Server::append_ip(std::string vec_vals) {
+  // append addrs of host to _clients of itself
+  std::vector<std::string> addr;
+  nlohmann::json j = nlohmann::json::parse(vec_vals);
+  for (const auto& id : j["ip"]) {
+    addr.push_back(id);
+  }
+  for (int i = 0; i < addr.size(); i++) {
+    _clients.push_back(addr[i]);
+    httplib::Client cli(addr[i], 4747);
+    cli.Post("/cgsg/my_ip", _ip, "text/plain");
+  }
+  // parse json of vec_vals
 }
 
 
-void Server::connect_to_canvas(std::string val) {
+void mr::Server::connect_to_canvas(std::string val) {
   // get/post reqs
+  _clients.push_back(val);
+
   httplib::Client cli(val, 4747);
-  cli.Post("/cgsg/my_ip", _ip, "text/plain"); // send itself ip
   
   auto res = cli.Get("/cgsg/cli"); // refresh vector of _clients with this user
   append_ip(res->body);
-  add_new_user();
+
+  cli.Post("/cgsg/my_ip", _ip, "text/plain"); // send itself ip
+
+  auto json_objects = cli.Get("cgsg/obj");
+  nlohmann::json j = nlohmann::json::parse(json_objects->body);
+  for (const auto& id : j["obj"]) {
+    std::string json_str = id.dump();
+    _parent._prims.emplace_back(prim_from_json(json_str));
+  }
+
+
+  // add_new_user();
 }
 
 
-void Server::add_new_user() {
+/*void mr::Server::add_new_user() {
   for (int i = 0; i < _clients.size(); i++) {
       httplib::Client cli(_clients[i], 4747);
       // json data instead of second param
       auto res = cli.Post("/cgsg/new_user", _clients[i], "text/plain");
   }
-}
+}*/
 
 
-void Server::server_func() {
+void mr::Server::server_func() {
   // HTTP
 
   /*_srv.Get("/cgsg", [](const httplib::Request &, httplib::Response &res) {
@@ -54,7 +80,19 @@ void Server::server_func() {
       j["ip"].push_back(_clients[i]);
     }
     std::string json_str = j.dump();
-    res.set_content("", "application/json");
+    res.set_content(json_str, "application/json");
+  });
+
+   _srv.Get("/cgsg/obj", [this](const httplib::Request &, httplib::Response &res) {
+    // _clients -> json
+    nlohmann::json j;
+    // Create an array for saving ip adresses
+    j["obj"] = nlohmann::json::array();
+    for (int i = 0; i < _parent._prims.size(); i++) {
+      j["obj"].push_back(mr::prim_to_json(_parent._prims[i]));
+    }
+    std::string json_str = j.dump();
+    res.set_content(json_str, "application/json");
   });
 
   /*
@@ -63,45 +101,44 @@ void Server::server_func() {
     res.set_content("", "application/json");
   });
   */
-  
-  _srv.Post("/cgsg/draw", [](const httplib::Request &req, httplib::Response &res) {
-    res.set_content("POST", "text/plain");
-    // req->body - there is json of new object for drawing
-    //draw func
-  });
 
   _srv.Post("/cgsg/draw", [this](const httplib::Request &req, httplib::Response &res) {
     res.set_content("POST", "text/plain");
-    // req->body - the  re is json with ip of new system
-    _clients.push_back(res.body);
+    _parent._prims.emplace_back(prim_from_json(req.body));
   });
 
-  _srv.Post("/cgsg/new_user", [this](const httplib::Request &req, httplib::Response &res) {
+  /*_srv.Post("/cgsg/draw", [this](const httplib::Request &req, httplib::Response &res) {
     res.set_content("POST", "text/plain");
     // req->body - the  re is json with ip of new system
     _clients.push_back(res.body);
-  });
+  });*/
+
+  /*_srv.Post("/cgsg/new_user", [this](const httplib::Request &req, httplib::Response &res) {
+    res.set_content("POST", "text/plain");
+    // req->body - the  re is json with ip of new system
+    _clients.push_back(res.body);
+  });*/
 
   _srv.Post("/cgsg/my_ip", [this](const httplib::Request &req, httplib::Response &res) {
     res.set_content("POST", "text/plain");
     // req->body - the  re is json with ip of new system
     _clients.push_back(res.body);
   });
-  
+
 
   _srv.listen(_ip, 4747);
 }
 
-void Server::draw_object() {
+void mr::Server::sync_object(std::string other) {
     for (int i = 0; i < _clients.size(); i++) {
         httplib::Client cli(_clients[i], 4747);
         // json data instead of second param
-        auto res = cli.Post("/cgsg/draw", "", "application/json");
+        auto res = cli.Post("/cgsg/draw", other, "application/json");
     }
 }
 
 
-std::string get_self_ip() {
+std::string mr::get_self_ip() {
 #ifdef _WIN32
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -130,7 +167,7 @@ std::string get_self_ip() {
     struct ifaddrs *ifap, *ifa;
     struct sockaddr_in *sa;
     char *addr;
-    
+
     if (getifaddrs(&ifap) == -1) {
         return "getifaddrs failed";
     }

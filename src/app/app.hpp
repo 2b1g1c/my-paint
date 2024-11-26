@@ -10,13 +10,15 @@
 #include "server/server.hpp"
 
 namespace mr {
+  class Prim;
   class Application {
+    friend class Server;
+
     private:
-      HelloImGui::RunnerParams runner_params;
-      ImmApp::AddOnsParams addons_params;
-      mr::PrimCollection prims;
-      bool is_glad_inited = false;
-      Server _server = get_self_ip();
+      HelloImGui::RunnerParams _runner_params;
+      ImmApp::AddOnsParams _addons_params;
+      mr::PrimCollection _prims;
+      mr::Server _server = {*this, get_self_ip()};
       std::jthread _thread;
 
       ImVec2 scaled_display_size() const noexcept
@@ -59,21 +61,21 @@ namespace mr {
         */
 
         if (ImGui::IsMouseDown(0)) /* LMB */ {
-          prims.emplace_back(*this, mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
+          _prims.emplace_back(*this, mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
         }
       }
 
       void render() noexcept {
         ImVec2 display_size = scaled_display_size();
         ImVec2 mouse_pos = scaled_mouse_pos();
-        prims.back().posx() =  (2 * (mouse_pos.x / display_size.x) - 1);
-        prims.back().posy() = -(2 * (mouse_pos.y / display_size.y) - 1);
+        _prims.back().posx() =  (2 * (mouse_pos.x / display_size.x) - 1);
+        _prims.back().posy() = -(2 * (mouse_pos.y / display_size.y) - 1);
 
         input();
 
         glViewport(0, 0, (GLsizei)display_size.x, (GLsizei)display_size.y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        prims.draw();
+        _prims.draw();
       }
 
       void gui() noexcept {
@@ -84,11 +86,11 @@ namespace mr {
       }
 
       void run() noexcept {
-        ImmApp::Run(runner_params, addons_params);
+        ImmApp::Run(_runner_params, _addons_params);
       }
 
-      void draw_object() {
-        _server.draw_object();
+      void sync_object(std::string other) {
+        _server.sync_object(other);
       }
   };
 } // namespace mr
