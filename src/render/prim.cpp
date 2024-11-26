@@ -732,17 +732,17 @@ std::string mr::prim_to_json(const mr::Prim &other) {
   j["a"] = other.rot();
   j["s"] = other.scale();
   j["_ptype"] = other.ptype();
-  std::string json_str = j.dump();
+  std::string json_str = j.dump(4);
   return json_str;
 }
 
 mr::Prim mr::prim_from_json(const std::string &str) {
-  nlohmann::json j = nlohmann::json::parse(str);
-  float px = j["px"];
-  float py = j["py"];
-  float a = j["a"];
-  float s = j["s"];
-  mr::Prim::PrimType ptype = j["_ptype"];
+  nlohmann::json j = nlohmann::json::parse(str.begin(), str.end());
+  float px = j["px"].get<float>();
+  float py = j["py"].get<float>();
+  float a = j["a"].get<float>();
+  float s = j["s"].get<float>();
+  mr::Prim::PrimType ptype = j["_ptype"].get<mr::Prim::PrimType>();
   mr::Prim res;
   switch (ptype) {
     case mr::Prim::PrimType::eCircle:
@@ -750,6 +750,9 @@ mr::Prim mr::prim_from_json(const std::string &str) {
       break;
     case mr::Prim::PrimType::eSquare:
       res = mr::create_square(px, py, a);
+      break;
+    case mr::Prim::PrimType::eOther:
+      std::cout << "Tried to construct from Prim::PrimType::eOther - not yet available" << std::endl;
       break;
   }
   return res;

@@ -14,7 +14,14 @@ namespace mr {
         Application &_parent;
 
     public:
-        Server(Application &parent, std::string val) : _parent(parent), _ip(val) {};
+        Server(Application &parent, std::string val) : _parent(parent), _ip(val) {
+          _srv.set_error_handler([](const auto& req, auto& res) {
+              auto fmt = "<p>Error Status: <span style='color:red;'>%d</span></p>";
+              char buf[BUFSIZ];
+              snprintf(buf, sizeof(buf), fmt, res.status);
+              res.set_content(buf, "text/html");
+              });
+        };
         void connect_to_canvas(std::string);
         void server_func();
 

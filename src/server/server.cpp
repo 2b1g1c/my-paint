@@ -47,10 +47,10 @@ void mr::Server::connect_to_canvas(std::string val) {
 
   cli.Post("/cgsg/my_ip", _ip, "text/plain"); // send itself ip
 
-  auto json_objects = cli.Get("cgsg/obj");
+  auto json_objects = cli.Get("/cgsg/obj");
   nlohmann::json j = nlohmann::json::parse(json_objects->body);
   for (const auto& id : j["obj"]) {
-    std::string json_str = id.dump();
+    std::string json_str = nlohmann::json::parse(id.get<std::string>()).dump(4);
     _parent._prims.emplace_back(prim_from_json(json_str));
   }
 
@@ -84,7 +84,7 @@ void mr::Server::server_func() {
     for (int i = 0; i < _clients.size(); i++) {
       j["ip"].push_back(_clients[i]);
     }
-    std::string json_str = j.dump();
+    std::string json_str = j.dump(4);
     res.set_content(json_str, "application/json");
   });
 
@@ -96,7 +96,7 @@ void mr::Server::server_func() {
     for (int i = 0; i < _parent._prims.size(); i++) {
       j["obj"].push_back(mr::prim_to_json(_parent._prims[i]));
     }
-    std::string json_str = j.dump();
+    std::string json_str = j.dump(4);
     res.set_content(json_str, "application/json");
   });
 
