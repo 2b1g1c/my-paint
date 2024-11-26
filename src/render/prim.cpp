@@ -1,9 +1,5 @@
-#include <algorithm>
-#include <execution>
 #include <string>
 #include "prim.hpp"
-
-// #include <CDT.h>
 
 #include "render/prim.hpp"
 
@@ -17,10 +13,6 @@ mr::Prim::~Prim() noexcept
 void mr::Prim::draw() const noexcept
 {
   shader.bind();
-  glUniform2f(glGetUniformLocation(shader.id(), "translation"), p[0], p[1]);
-  glUniform1f(glGetUniformLocation(shader.id(), "rotation"), a);
-  glUniform1f(glGetUniformLocation(shader.id(), "scale"), s);
-
   glBindVertexArray(_va);
 
   if (_ibuf == 0) {
@@ -41,7 +33,7 @@ void mr::Prim::draw() const noexcept
   glBindVertexArray(0);
 }
 
-mr::Prim mr::create_circle(float posx, float posy, float r) noexcept
+mr::Prim mr::create_circle() noexcept
 {
   using vec2 = float[2];
   // (2pi / 0.01) vertices
@@ -686,14 +678,10 @@ mr::Prim mr::create_circle(float posx, float posy, float r) noexcept
   return mr::Prim("default",
                   std::span<vec2>(vertices),
                   std::span<std::uint32_t>(indices),
-                  posx,
-                  posy,
-                  0,
-                  r,
                   mr::Prim::PrimType::eCircle);
 }
 
-mr::Prim mr::create_square(float posx, float posy, float a) noexcept
+mr::Prim mr::create_square() noexcept
 {
   using vec2 = float[2];
 
@@ -705,55 +693,22 @@ mr::Prim mr::create_square(float posx, float posy, float a) noexcept
   };
 
   unsigned int indices[] = {
-    // note that we start from 0!
-    0,
-    1,
-    3, // first Triangle
-    1,
-    2,
-    3 // second Triangle
+    0, 1, 3, // first Triangle
+    1, 2, 3  // second Triangle
   };
 
   return mr::Prim("default",
                   std::span<vec2> {vertices},
                   std::span<unsigned int> {indices},
-                  posx,
-                  posy,
-                  0,
-                  a,
                   mr::Prim::PrimType::eSquare);
 }
 
-std::string mr::prim_to_json(const mr::Prim &other) {
+std::string mr::serialize(mr::Prim::PrimType ptype, mr::Transform transform) {
   nlohmann::json j;
-  // Create an array for saving ip adresses
-  j["px"] = other.posx();
-  j["py"] = other.posy();
-  j["a"] = other.rot();
-  j["s"] = other.scale();
-  j["_ptype"] = other.ptype();
-  std::string json_str = j.dump(4);
-  return json_str;
-}
-
-mr::Prim mr::prim_from_json(const std::string &str) {
-  nlohmann::json j = nlohmann::json::parse(str.begin(), str.end());
-  float px = j["px"].get<float>();
-  float py = j["py"].get<float>();
-  float a = j["a"].get<float>();
-  float s = j["s"].get<float>();
-  mr::Prim::PrimType ptype = j["_ptype"].get<mr::Prim::PrimType>();
-  mr::Prim res;
-  switch (ptype) {
-    case mr::Prim::PrimType::eCircle:
-      res = mr::create_circle(px, py, s);
-      break;
-    case mr::Prim::PrimType::eSquare:
-      res = mr::create_square(px, py, a);
-      break;
-    case mr::Prim::PrimType::eOther:
-      std::cout << "Tried to construct from Prim::PrimType::eOther - not yet available" << std::endl;
-      break;
-  }
-  return res;
+  j["_ptype"] = ptype;
+  j["px"] = transform.posx();
+  j["py"] = transform.posy();
+  j["a"] = transform.rot();
+  j["s"] = transform.scale();
+  return j.dump(4);
 }

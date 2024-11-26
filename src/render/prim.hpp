@@ -4,13 +4,21 @@
 #include "render/shader.hpp"
 
 namespace mr {
-  class Prim;
+  struct Transform {
+    float p[2] = {}; // pos
+    float a = 0;     // angle
+    float s = 1;     // scale
 
-  Prim create_circle(float posx, float poxy, float r) noexcept;
-  Prim create_square(float posx, float poxy, float a) noexcept;
+    float & posx() noexcept { return p[0]; }
+    float & posy() noexcept { return p[1]; }
+    float & rot() noexcept { return a; }
+    float & scale() noexcept { return s; }
 
-  std::string prim_to_json(const Prim &other);
-  Prim prim_from_json(const std::string &str);
+    float posx() const noexcept { return p[0]; }
+    float posy() const noexcept { return p[1]; }
+    float rot() const noexcept { return a; }
+    float scale() const noexcept { return s; }
+  };
 
   class Prim {
     private:
@@ -39,9 +47,6 @@ namespace mr {
 
       Shader shader;
 
-      float p[2] = {}; // pos
-      float a = 0;     // angle
-      float s = 1;     // scale
       PrimType _ptype = PrimType::eOther;
 
     public:
@@ -58,10 +63,6 @@ namespace mr {
         std::swap(_num_of_instances, other._num_of_instances);
         std::swap(_num_of_elements, other._num_of_elements);
         std::swap(_num_of_patches, other._num_of_patches);
-        std::swap(p[0], other.p[0]);
-        std::swap(p[1], other.p[1]);
-        std::swap(a, other.a);
-        std::swap(s, other.s);
         std::swap(_ptype, other._ptype);
       }
 
@@ -75,23 +76,14 @@ namespace mr {
         std::swap(_num_of_instances, other._num_of_instances);
         std::swap(_num_of_elements, other._num_of_elements);
         std::swap(_num_of_patches, other._num_of_patches);
-        std::swap(p[0], other.p[0]);
-        std::swap(p[1], other.p[1]);
-        std::swap(a, other.a);
-        std::swap(s, other.s);
         std::swap(_ptype, other._ptype);
         return *this;
       }
 
       template <typename V, typename I>
-      Prim(std::string_view source, std::span<V> vertices, std::span<I> indices,
-           float posx = 0, float posy = 0, float angle = 0, float scale = 1, PrimType ptype = PrimType::eOther)
+      Prim(std::string_view source, std::span<V> vertices, std::span<I> indices, PrimType ptype = PrimType::eOther)
       {
         shader = mr::Shader(source);
-        p[0] = posx;
-        p[1] = posy;
-        a = angle;
-        s = scale;
         _ptype = ptype;
 
         if (vertices.size() != 0) {
@@ -140,31 +132,17 @@ namespace mr {
       void draw() const noexcept;
 
       // getters
-      float posx() const { return p[0]; }
+      std::uint32_t num_of_instances() const noexcept { return _num_of_instances; }
 
-      float& posx() { return p[0]; }
-
-      float posy() const { return p[1]; }
-
-      float& posy() { return p[1]; }
-
-      float rot() const { return a; }
-
-      float& rot() { return a; }
-
-      float scale() const { return s; }
-
-      float& scale() { return s; }
+      std::uint32_t & num_of_instances() noexcept { return _num_of_instances; }
 
       PrimType ptype() const { return _ptype; }
 
-      PrimType& ptype() { return _ptype; }
+      PrimType & ptype() { return _ptype; }
   };
 
-  template <typename V>
-    inline mr::Prim create_from_points(std::span<V> vertices) noexcept
-    {
-      // TODO: implement (via triangulation (on GPU???))
-      return mr::Prim();
-    }
+  Prim create_circle() noexcept;
+  Prim create_square() noexcept;
+
+  std::string serialize(mr::Prim::PrimType ptype, mr::Transform transform);
 } // namespace mr

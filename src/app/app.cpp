@@ -2,25 +2,21 @@
 #include <thread>
 
 mr::Application::Application() noexcept {
-
-
   _thread = std::jthread(
     [this]() {
       _server.server_func();
     }
     );
-  //_thread.join();
-
 
   _runner_params.fpsIdling.enableIdling = false; // disable idling so that the shader runs at full speed
   _runner_params.appWindowParams.windowGeometry.size = {4000, 2000};
   _runner_params.appWindowParams.windowTitle = "CGSGFOREVER";
-  _runner_params.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow; // Do not create a default ImGui window, so that the shader occupies the whole display
-                                                                                                                // PostInit is called after the ImGui context is created, and after OpenGL is initialized
+  // Do not create a default ImGui window, so that the shader occupies the whole display
+  _runner_params.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow;
+  // PostInit is called after the ImGui context is created, and after OpenGL is initialized
   _runner_params.callbacks.PostInit = [&]() {
     glEnable(GL_SCISSOR_TEST);
     glClearColor(1, 1, 1, 1);
-    _prims.emplace_back(*this, mr::create_circle(0.2, 0.2, 0.01));
   };
   _runner_params.callbacks.ShowGui = [&]() { gui(); }; // ShowGui is called every frame, and is used to display the ImGui widgets
   _runner_params.callbacks.CustomBackground = [&]() { render(); }; // CustomBackground is called every frame, and is used to display the custom background

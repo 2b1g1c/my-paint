@@ -61,15 +61,15 @@ namespace mr {
         */
 
         if (ImGui::IsMouseDown(0)) /* LMB */ {
-          _prims.emplace_back(*this, mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
+          _prims.emplace_back_synced(*this, mr::Prim::PrimType::eCircle, {mouse_pos.x, mouse_pos.y, 0.01});
         }
       }
 
       void render() noexcept {
         ImVec2 display_size = scaled_display_size();
         ImVec2 mouse_pos = scaled_mouse_pos();
-        _prims.back().posx() =  (2 * (mouse_pos.x / display_size.x) - 1);
-        _prims.back().posy() = -(2 * (mouse_pos.y / display_size.y) - 1);
+        // _prims.back().posx() =  (2 * (mouse_pos.x / display_size.x) - 1);
+        // _prims.back().posy() = -(2 * (mouse_pos.y / display_size.y) - 1);
 
         input();
 

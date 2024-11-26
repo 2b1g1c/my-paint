@@ -1,8 +1,16 @@
-#version 330 core
+#version 450 core
 
-uniform vec2 translation;
-uniform float rotation;
-uniform float scale;
+struct Transform
+{
+  vec2 pos;
+  float rot;
+  float scale;
+};
+
+layout(std430, binding = 0) buffer Transforms
+{
+  Transform transforms[];
+};
 
 vec2 rotate(vec2 v, float a) {
 	float s = sin(a);
@@ -12,7 +20,13 @@ vec2 rotate(vec2 v, float a) {
 }
 
 layout (location = 0) in vec2 aPos;
+
 void main() {
+  Transform transform = transforms[gl_InstanceID];
+  vec2 translation = transform.pos;
+  float rotation = transform.rot;
+  float scale = transform.scale;
+
   gl_Position = vec4(translation + scale * rotate(aPos.xy, rotation), 0.0f, 1.0f);
 }
 

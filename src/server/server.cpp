@@ -1,19 +1,18 @@
 #include <string>
 #include "render/prim.hpp"
 #ifdef _WIN32
-    #include <winsock2.h>
-    #pragma comment(lib, "ws2_32.lib") // link a library for Winsock
+  #include <winsock2.h>
+  #pragma comment(lib, "ws2_32.lib") // link a library for Winsock
 #else
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-    #include <ifaddrs.h>
-    #include <unistd.h>
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+  #include <ifaddrs.h>
+  #include <unistd.h>
 #endif
 
 #include "app/app.hpp"
 #include "server/server.hpp"
-
 
 void mr::Server::append_ip(std::string vec_vals) {
   // append addrs of host to _clients of itself
@@ -27,9 +26,7 @@ void mr::Server::append_ip(std::string vec_vals) {
     httplib::Client cli(addr[i], 4747);
     cli.Post("/cgsg/my_ip", _ip, "text/plain");
   }
-  // parse json of vec_vals
 }
-
 
 void mr::Server::connect_to_canvas(std::string val) {
   // get/post reqs
@@ -43,6 +40,7 @@ void mr::Server::connect_to_canvas(std::string val) {
   }
   else {
     std::cout << "Sorry, the canvas was not there :(" << std::endl;
+    return;
   }
 
   cli.Post("/cgsg/my_ip", _ip, "text/plain"); // send itself ip
@@ -51,30 +49,12 @@ void mr::Server::connect_to_canvas(std::string val) {
   nlohmann::json j = nlohmann::json::parse(json_objects->body);
   for (const auto& id : j["obj"]) {
     std::string json_str = nlohmann::json::parse(id.get<std::string>()).dump(4);
-    _parent._prims.emplace_back(prim_from_json(json_str));
+    _parent._prims.deserialize(json_str);
   }
-
-
-  // add_new_user();
 }
-
-
-/*void mr::Server::add_new_user() {
-  for (int i = 0; i < _clients.size(); i++) {
-      httplib::Client cli(_clients[i], 4747);
-      // json data instead of second param
-      auto res = cli.Post("/cgsg/new_user", _clients[i], "text/plain");
-  }
-}*/
-
 
 void mr::Server::server_func() {
   // HTTP
-
-  /*_srv.Get("/cgsg", [](const httplib::Request &, httplib::Response &res) {
-    // send data to draw
-    res.set_content("Hello World!", "text/plain");
-  });*/
 
   _srv.Get("/cgsg/cli", [this](const httplib::Request &, httplib::Response &res) {
     // _clients -> json
@@ -88,48 +68,30 @@ void mr::Server::server_func() {
     res.set_content(json_str, "application/json");
   });
 
-   _srv.Get("/cgsg/obj", [this](const httplib::Request &, httplib::Response &res) {
+  _srv.Get("/cgsg/obj", [this](const httplib::Request &, httplib::Response &res) {
     // _clients -> json
     nlohmann::json j;
     // Create an array for saving ip adresses
     j["obj"] = nlohmann::json::array();
     for (int i = 0; i < _parent._prims.size(); i++) {
-      j["obj"].push_back(mr::prim_to_json(_parent._prims[i]));
+      for (const auto &trans : _parent._prims.transforms(i)) {
+        j["obj"].push_back(mr::serialize((Prim::PrimType)i, trans));
+      }
     }
     std::string json_str = j.dump(4);
     res.set_content(json_str, "application/json");
   });
 
-  /*
-  _srv.Get("/cgsg/in", [](const httplib::Request &, httplib::Response &res) {
-    // _clients -> json
-    res.set_content("", "application/json");
-  });
-  */
-
   _srv.Post("/cgsg/draw", [this](const httplib::Request &req, httplib::Response &res) {
     res.set_content("POST", "text/plain");
-    _parent._prims.emplace_back(prim_from_json(req.body));
+    _parent._prims.deserialize(req.body);
   });
-
-  /*_srv.Post("/cgsg/draw", [this](const httplib::Request &req, httplib::Response &res) {
-    res.set_content("POST", "text/plain");
-    // req->body - the  re is json with ip of new system
-    _clients.push_back(res.body);
-  });*/
-
-  /*_srv.Post("/cgsg/new_user", [this](const httplib::Request &req, httplib::Response &res) {
-    res.set_content("POST", "text/plain");
-    // req->body - the  re is json with ip of new system
-    _clients.push_back(res.body);
-  });*/
 
   _srv.Post("/cgsg/my_ip", [this](const httplib::Request &req, httplib::Response &res) {
     res.set_content("POST", "text/plain");
-    // req->body - the  re is json with ip of new system
+    // req->body - the  req is json with ip of new system
     _clients.push_back(req.body);
   });
-
 
   _srv.listen(_ip, 4747);
 }
@@ -137,11 +99,9 @@ void mr::Server::server_func() {
 void mr::Server::sync_object(std::string other) {
     for (int i = 0; i < _clients.size(); i++) {
         httplib::Client cli(_clients[i], 4747);
-        // json data instead of second param
         auto res = cli.Post("/cgsg/draw", other, "application/json");
     }
 }
-
 
 std::string mr::get_self_ip() {
 #ifdef _WIN32
