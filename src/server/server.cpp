@@ -36,9 +36,14 @@ void mr::Server::connect_to_canvas(std::string val) {
   _clients.push_back(val);
 
   httplib::Client cli(val, 4747);
-  
+
   auto res = cli.Get("/cgsg/cli"); // refresh vector of _clients with this user
-  append_ip(res->body);
+  if (res) {
+    append_ip(res->body);
+  }
+  else {
+    std::cout << "Sorry, the canvas was not there :(" << std::endl;
+  }
 
   cli.Post("/cgsg/my_ip", _ip, "text/plain"); // send itself ip
 
