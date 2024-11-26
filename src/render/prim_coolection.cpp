@@ -19,8 +19,12 @@ void mr::PrimCollection::draw() const noexcept
 
 void mr::PrimCollection::emplace_back(mr::Prim::PrimType ptype, mr::Transform transform) noexcept {
   if (transforms((int)ptype).size() != 0) {
+    _datas[(int)ptype].push_back(transform);
+    _ssbos[(int)ptype].write(std::span(_datas[(int)ptype]));
     _prims[(int)ptype].num_of_instances()++;
   } else {
+    _datas[(int)ptype].push_back(transform);
+    _ssbos[(int)ptype] = SSBO(std::span(_datas[(int)ptype]));
     switch (ptype) {
       case Prim::PrimType::eCircle:
         _prims[(int)ptype] = create_circle();
@@ -32,8 +36,6 @@ void mr::PrimCollection::emplace_back(mr::Prim::PrimType ptype, mr::Transform tr
         break;
     }
   }
-  _datas[(int)ptype].push_back(transform);
-  _ssbos[(int)ptype].write(std::span(_datas[(int)ptype]));
 }
 
 void mr::PrimCollection::emplace_back_synced(mr::Application &app, mr::Prim::PrimType ptype, mr::Transform transform) noexcept {
