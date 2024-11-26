@@ -92,5 +92,9 @@ namespace mr {
       void sync_object(std::string other) {
         _server.sync_object(other);
       }
+
+      void connect_to_canvas(const std::string &str) noexcept {
+        _server.connect_to_canvas(str);
+      }
   };
 } // namespace mr

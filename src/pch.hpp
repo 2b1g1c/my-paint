@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <thread>
 
 #include <httplib/httplib.h>
 #include <glad/glad.h>
