@@ -127,7 +127,7 @@ void mr::Server::server_func() {
   _srv.Post("/cgsg/my_ip", [this](const httplib::Request &req, httplib::Response &res) {
     res.set_content("POST", "text/plain");
     // req->body - the  re is json with ip of new system
-    _clients.push_back(res.body);
+    _clients.push_back(req.body);
   });
 
 
