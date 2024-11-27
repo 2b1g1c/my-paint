@@ -27,10 +27,13 @@ namespace mr {
       }
 
       template <typename T>
-      void write(std::span<T> data, std::uint32_t usage = GL_DYNAMIC_DRAW) {
+      void write(std::span<T> data) {
         bind();
-        glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(T), data.data(), usage);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(T), data.data(), GL_DYNAMIC_COPY);
         unbind();
       }
+
+      // getters
+      std::uint32_t id() const noexcept { return ssbo; }
   };
 }

@@ -10,9 +10,8 @@ void mr::PrimCollection::draw() const noexcept
     const auto & data = _datas[i];
 
     if (data.size() > 0) {
-      ssbo.bind();
+      glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssbo.id());
       prim.draw();
-      ssbo.unbind();
     }
   }
 }
