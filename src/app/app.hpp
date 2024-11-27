@@ -11,8 +11,14 @@
 namespace mr {
   class Application {
     private:
-      bool show_window1 = true;
-      bool show_window2 = false;
+      bool show_shapes_window = false;
+      bool show_painting_window = false;
+      bool show_server_window = false;
+      bool show_debug_window = false;
+      bool show_join_window = false;
+     // bool show_host_window = false;
+      float size = 0.01f; //drawing size
+      
 
       HelloImGui::RunnerParams runner_params;
       ImmApp::AddOnsParams addons_params;
@@ -56,7 +62,7 @@ namespace mr {
            */
 
         if (ImGui::IsMouseDown(0)) /* LMB */ {
-          prims.emplace_back(mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
+          prims.emplace_back(mr::create_circle(mouse_pos.x, mouse_pos.y, size));
         }
       }
 

@@ -19,63 +19,138 @@ mr::Application::Application() noexcept {
 }
 
 void mr::Application::gui() noexcept {
-  static float my_color[4] = {0.0f, 1.0f, 0.0f, 1.0f};
-  if (this->show_window1) {
-    ImGui::Begin("Are u host?", &this->show_window1);
-    if (ImGui::Button("Yes")) {
-      this->show_window1 = false;
-      this->show_window2 = true;
+  static float my_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+
+  
+
+  if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::Button("Painting")) {
+        if (show_painting_window == true) {
+        show_painting_window = false;
+        }
+        else {
+          show_painting_window = true;
+        }
     }
+    ImGui::SetCursorPos({76, 0});
+
+    if (ImGui::Button("Shapes")) {
+      if (show_shapes_window == true) {
+        show_shapes_window = false;
+      }
+      else {
+        show_shapes_window = true;
+      }
+    }
+    ImGui::SetCursorPos({140, 0});
+
+    if (ImGui::Button("Server")) {
+      if (show_server_window == true) {
+        show_server_window = false;
+      }
+      else {
+        show_server_window = true;
+      }
+    }
+    ImGui::SetCursorPos({195, 0});
+
+    if (ImGui::Button("Debug")) {
+      if (show_debug_window == true) {
+        show_debug_window = false;
+      }
+      else {
+        show_debug_window = true;
+      }
+    }
+    ImGui::EndMainMenuBar();
+  }
+
+
+  if (show_shapes_window) {
+    ImGui::Begin("Shapes", &show_shapes_window); 
+
+    if (ImGui::Button("Circle")) {
+      ImVec2 display_size = scaled_display_size();
+      ImVec2 mouse_pos = scaled_mouse_pos();
+      mouse_pos.x = (2 * (mouse_pos.x / display_size.x) - 1);
+      mouse_pos.y = -(2 * (mouse_pos.y / display_size.y) - 1);
+      prims.emplace_back(mr::create_circle(mouse_pos.x, mouse_pos.y, size));
+    }
+    ImGui::SameLine();
+
+    if (ImGui::Button("Square")) {
+      ImVec2 display_size = scaled_display_size();
+      ImVec2 mouse_pos = scaled_mouse_pos();
+      mouse_pos.x = (2 * (mouse_pos.x / display_size.x) - 1);
+      mouse_pos.y = -(2 * (mouse_pos.y / display_size.y) - 1);
+      prims.emplace_back(mr::create_square(mouse_pos.x, mouse_pos.y, size));
+    }
+
     ImGui::End();
   }
 
-  if (this->show_window2) {
-    ImVec2 display_size = scaled_display_size();
-    ImVec2 mouse_pos = scaled_mouse_pos();
-    mouse_pos.x =  (2 * (mouse_pos.x / display_size.x) - 1);
-    mouse_pos.y = -(2 * (mouse_pos.y / display_size.y) - 1);
-    ImGui::Begin("Tools", &this->show_window2, ImGuiWindowFlags_MenuBar);
-    if (ImGui::BeginMenuBar()) {
-      if (ImGui::BeginMenu("File")) {
-        if (ImGui::MenuItem("Open..")) {
-          /* Do stuff */
-        }
-        if (ImGui::MenuItem("Save")) {
-          /* Do stuff */
-        }
-        if (ImGui::MenuItem("Close")) {
-          this->show_window2 = false;
-          ImGui::End();
-        }
-        ImGui::EndMenu();
-      }
-      ImGui::EndMenuBar();
+  
+  if (show_painting_window) {
+    ImGui::Begin("Painting parametrs", &show_painting_window);
+    //TODO: add painting checkbox which turns off and on brush
+    
+    ImGui::ColorEdit4("Change color", my_color); //цвет рисования и фигур!!!!!
+    ImGui::SliderFloat("Size", &size, 0.0f, 1.0f, "%.2f"); 
 
-      if (ImGui::CollapsingHeader("Colour")) {
-        ImGui::ColorEdit4("Color", my_color);
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(my_color[0], my_color[1], my_color[2], my_color[3]));
-        ImGui::PopStyleColor();
-        float samples[100];
-        for (int n = 0; n < 100; n++) {
-          samples[n] = sinf(n * 0.2f + ImGui::GetTime() * 1.5f);
-        }
-        ImGui::PlotLines("Samples", samples, 100);
-      }
-      if (ImGui::CollapsingHeader("Drawing materials")) {
-        if (ImGui::Button("Circle")) {
-          prims.emplace_back(mr::create_circle(mouse_pos.x, mouse_pos.y, 0.01));
-        }
-        if (ImGui::Button("Square")) {
-          prims.emplace_back(mr::create_square(mouse_pos.x, mouse_pos.y, 0.01));
-        }
-        if (ImGui::Button("Ellipse")) {
-          prims.emplace_back(mr::create_square(mouse_pos.x, mouse_pos.y, 0.04));
-        }
-      }
+
+    ImGui::End();
+  }
+
+  if (show_server_window) {
+    ImGui::Begin("Server menu", &show_server_window);
+    if (ImGui::Button("Join server")) {
+      //show_host_window = false;
+      show_join_window = true;
+      show_server_window = false;
+    }
+    /* 
+    f (ImGui::Button("Сreate server")) {
+      show_host_window = true;
+      show_join_window = false;
+      show_server_window = false;
+    }
+    */
+    ImGui::End(); 
+    
+  }
+   /*
+   if (show_host_window) {
+    ImGui::Begin("Local server hosting is in progress...", &show_host_window);
+
+    ImGui::Text("Nothing! Add server creating process");
+
+    ImGui::End();
+  }
+  */
+  if (show_join_window) {
+    ImGui::Begin("Join to local server", &show_join_window);
+
+    static char ip_address[20] = "127.0.0.1"; 
+    ImGui::InputText("IP Address", ip_address, 20); 
+
+    if (ImGui::Button("Connect")) {
+
+      std::cout << "Connecting to: " << ip_address << std::endl;
+      //add connecting func
+
     }
 
     ImGui::End();
   }
+
+  if (show_debug_window) {
+    ImGui::Begin("Debug menu", &show_debug_window);
+
+    ImGui::Text("FPS: %.1f", HelloImGui::FrameRate());
+
+    ImGui::End();
+  }
+  
 }
 
 void APIENTRY glDebugOutput(std::uint32_t source, std::uint32_t type,
