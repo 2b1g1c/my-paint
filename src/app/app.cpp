@@ -1,6 +1,11 @@
 #include "app.hpp"
 #include <thread>
 
+void APIENTRY glDebugOutput(std::uint32_t source, std::uint32_t type,
+                            std::uint32_t id, std::uint32_t severity,
+                            int length, const char *message,
+                            const void *userparam);
+
 mr::Application::Application() noexcept {
   _thread = std::jthread(
     [this]() {
@@ -17,6 +22,8 @@ mr::Application::Application() noexcept {
   _runner_params.callbacks.PostInit = [&]() {
     glEnable(GL_SCISSOR_TEST);
     glClearColor(1, 1, 1, 1);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(glDebugOutput, NULL);
   };
   _runner_params.callbacks.ShowGui = [&]() { gui(); }; // ShowGui is called every frame, and is used to display the ImGui widgets
   _runner_params.callbacks.CustomBackground = [&]() { render(); }; // CustomBackground is called every frame, and is used to display the custom background
