@@ -41,7 +41,6 @@ namespace mr {
 
     private:
       TopologyType _ttype = TopologyType::eTrimesh;
-      std::uint32_t _num_of_instances = 1;
       // vertex, index buffers, vertex array from the device
       std::uint32_t _vbuf = 0, _ibuf = 0, _va = 0;
       std::uint32_t _num_of_elements = 0; // number of elements on the device
@@ -59,7 +58,6 @@ namespace mr {
         std::swap(_ibuf, other._ibuf);
         std::swap(_va, other._va);
         std::swap(_ttype, other._ttype);
-        std::swap(_num_of_instances, other._num_of_instances);
         std::swap(_num_of_elements, other._num_of_elements);
         std::swap(_num_of_patches, other._num_of_patches);
         std::swap(_ptype, other._ptype);
@@ -71,7 +69,6 @@ namespace mr {
         std::swap(_ibuf, other._ibuf);
         std::swap(_va, other._va);
         std::swap(_ttype, other._ttype);
-        std::swap(_num_of_instances, other._num_of_instances);
         std::swap(_num_of_elements, other._num_of_elements);
         std::swap(_num_of_patches, other._num_of_patches);
         std::swap(_ptype, other._ptype);
@@ -126,13 +123,9 @@ namespace mr {
 
       ~Prim() noexcept;
 
-      void draw(const Shader &shader, const SSBO<Transform> &ssbo) const noexcept;
+      void draw(const SSBO<Transform> &ssbo) const noexcept;
 
       // getters
-      std::uint32_t num_of_instances() const noexcept { return _num_of_instances; }
-
-      std::uint32_t & num_of_instances() noexcept { return _num_of_instances; }
-
       PrimType ptype() const { return _ptype; }
 
       PrimType & ptype() { return _ptype; }

@@ -12,14 +12,13 @@ mr::Prim::~Prim() noexcept
   glDeleteBuffers(1, &_ibuf);
 }
 
-void mr::Prim::draw(const mr::Shader &shader, const mr::SSBO<Transform> &ssbo) const noexcept {
-  shader.apply();
+void mr::Prim::draw(const mr::SSBO<Transform> &ssbo) const noexcept {
   ssbo.apply();
   glBindVertexArray(_va);
 
   if (_ibuf == 0) {
     glDrawArraysInstanced(
-      (uint32_t)_ttype, 0, _num_of_elements, _num_of_instances);
+      (uint32_t)_ttype, 0, _num_of_elements, ssbo.size());
   }
   else {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibuf);
@@ -27,7 +26,7 @@ void mr::Prim::draw(const mr::Shader &shader, const mr::SSBO<Transform> &ssbo) c
                             _num_of_elements,
                             GL_UNSIGNED_INT,
                             NULL,
-                            _num_of_instances);
+                            ssbo.size());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 

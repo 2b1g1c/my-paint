@@ -9,7 +9,7 @@ void mr::PrimCollection::draw() const noexcept {
     const auto & data = _datas[i];
 
     if (data.size() > 0) {
-      prim.draw(shader, ssbo);
+      prim.draw(ssbo);
     }
   }
 }
@@ -20,7 +20,7 @@ void mr::PrimCollection::emplace_back(mr::Prim::PrimType ptype, mr::Transform tr
   auto &ssbo = _ssbos[(int)ptype];
 
   data.push_back(transform);
-  if (data.size() != 1) {
+  if (data.size() > 1) {
     ssbo.update(data);
   } else {
     ssbo = mr::SSBO<mr::Transform>(data);

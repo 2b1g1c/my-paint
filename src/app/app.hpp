@@ -66,6 +66,8 @@ namespace mr {
       }
 
       void render() noexcept {
+        static Shader shader = Shader("default");
+
         ImVec2 display_size = scaled_display_size();
         ImVec2 mouse_pos = scaled_mouse_pos();
         // _prims.back().posx() =  (2 * (mouse_pos.x / display_size.x) - 1);
@@ -75,6 +77,7 @@ namespace mr {
 
         glViewport(0, 0, (GLsizei)display_size.x, (GLsizei)display_size.y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        shader.apply();
         _prims.draw();
       }
 
