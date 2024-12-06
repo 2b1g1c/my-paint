@@ -1,7 +1,9 @@
 #include <string>
 #include "prim.hpp"
 
-#include "render/prim.hpp"
+#include "rnd/prim.hpp"
+#include "rnd/ssbo.hpp"
+#include "rnd/shader.hpp"
 
 mr::Prim::~Prim() noexcept
 {
@@ -10,9 +12,9 @@ mr::Prim::~Prim() noexcept
   glDeleteBuffers(1, &_ibuf);
 }
 
-void mr::Prim::draw() const noexcept
-{
-  shader.bind();
+void mr::Prim::draw(const mr::Shader &shader, const mr::SSBO<Transform> &ssbo) const noexcept {
+  shader.apply();
+  ssbo.apply();
   glBindVertexArray(_va);
 
   if (_ibuf == 0) {
@@ -33,8 +35,7 @@ void mr::Prim::draw() const noexcept
   glBindVertexArray(0);
 }
 
-mr::Prim mr::create_circle() noexcept
-{
+mr::Prim mr::create_circle() noexcept {
   using vec2 = float[2];
   // (2pi / 0.01) vertices
   vec2 vertices[] = {

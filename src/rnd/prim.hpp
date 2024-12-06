@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pch.hpp"
-#include "render/shader.hpp"
+#include "rnd/ssbo.hpp"
 
 namespace mr {
   struct Transform {
@@ -19,6 +19,8 @@ namespace mr {
     float rot() const noexcept { return a; }
     float scale() const noexcept { return s; }
   };
+
+  class Shader;
 
   class Prim {
     private:
@@ -45,8 +47,6 @@ namespace mr {
       std::uint32_t _num_of_elements = 0; // number of elements on the device
       std::uint32_t _num_of_patches = 0;  // number of patches
 
-      Shader shader;
-
       PrimType _ptype = PrimType::eOther;
 
     public:
@@ -58,7 +58,6 @@ namespace mr {
         std::swap(_vbuf, other._vbuf);
         std::swap(_ibuf, other._ibuf);
         std::swap(_va, other._va);
-        std::swap(shader, other.shader);
         std::swap(_ttype, other._ttype);
         std::swap(_num_of_instances, other._num_of_instances);
         std::swap(_num_of_elements, other._num_of_elements);
@@ -71,7 +70,6 @@ namespace mr {
         std::swap(_vbuf, other._vbuf);
         std::swap(_ibuf, other._ibuf);
         std::swap(_va, other._va);
-        std::swap(shader, other.shader);
         std::swap(_ttype, other._ttype);
         std::swap(_num_of_instances, other._num_of_instances);
         std::swap(_num_of_elements, other._num_of_elements);
@@ -83,7 +81,6 @@ namespace mr {
       template <typename V, typename I>
       Prim(std::string_view source, std::span<V> vertices, std::span<I> indices, PrimType ptype = PrimType::eOther)
       {
-        shader = mr::Shader(source);
         _ptype = ptype;
 
         if (vertices.size() != 0) {
@@ -129,7 +126,7 @@ namespace mr {
 
       ~Prim() noexcept;
 
-      void draw() const noexcept;
+      void draw(const Shader &shader, const SSBO<Transform> &ssbo) const noexcept;
 
       // getters
       std::uint32_t num_of_instances() const noexcept { return _num_of_instances; }

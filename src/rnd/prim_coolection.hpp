@@ -6,6 +6,7 @@
 
 #include "pch.hpp"
 #include "prim.hpp"
+#include "shader.hpp"
 #include "ssbo.hpp"
 
 namespace mr {
@@ -15,8 +16,9 @@ namespace mr {
     private:
       inline static constexpr std::size_t _size = (std::size_t)Prim::PrimType::eOther;
 
+      Shader shader;
       std::array<Prim, _size> _prims;
-      std::array<SSBO, _size> _ssbos;
+      std::array<SSBO<Transform>, _size> _ssbos;
       std::array<std::vector<Transform>, _size> _datas;
 
     public:

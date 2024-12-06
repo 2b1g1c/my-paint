@@ -5,9 +5,9 @@
 #include "immapp/runner.h"
 #include "pch.hpp"
 
-#include "render/prim.hpp"
-#include "render/prim_coolection.hpp"
-#include "server/server.hpp"
+#include "rnd/prim.hpp"
+#include "rnd/prim_coolection.hpp"
+#include "srv/server.hpp"
 
 namespace mr {
   class Prim;

@@ -1,5 +1,5 @@
 #include <string>
-#include "render/prim.hpp"
+#include "rnd/prim.hpp"
 #ifdef _WIN32
   #include <winsock2.h>
   #pragma comment(lib, "ws2_32.lib") // link a library for Winsock
@@ -12,7 +12,7 @@
 #endif
 
 #include "app/app.hpp"
-#include "server/server.hpp"
+#include "srv/server.hpp"
 
 void mr::Server::append_ip(std::string vec_vals) {
   // append addrs of host to _clients of itself

@@ -2,34 +2,34 @@
 #include "app/app.hpp"
 #include "prim.hpp"
 
-void mr::PrimCollection::draw() const noexcept
-{
+void mr::PrimCollection::draw() const noexcept {
   for (int i = 0; i < _size; i++) {
     const auto & prim = _prims[i];
     const auto & ssbo = _ssbos[i];
     const auto & data = _datas[i];
 
     if (data.size() > 0) {
-      glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssbo.id());
-      prim.draw();
+      prim.draw(shader, ssbo);
     }
   }
 }
 
 void mr::PrimCollection::emplace_back(mr::Prim::PrimType ptype, mr::Transform transform) noexcept {
-  if (transforms((int)ptype).size() != 0) {
-    _datas[(int)ptype].push_back(transform);
-    _ssbos[(int)ptype].write(std::span(_datas[(int)ptype]));
-    _prims[(int)ptype].num_of_instances()++;
+  auto &prim = _prims[(int)ptype];
+  auto &data = _datas[(int)ptype];
+  auto &ssbo = _ssbos[(int)ptype];
+
+  data.push_back(transform);
+  if (data.size() != 1) {
+    ssbo.update(data);
   } else {
-    _datas[(int)ptype].push_back(transform);
-    _ssbos[(int)ptype] = SSBO(std::span(_datas[(int)ptype]));
+    ssbo = mr::SSBO<mr::Transform>(data);
     switch (ptype) {
       case Prim::PrimType::eCircle:
-        _prims[(int)ptype] = create_circle();
+        prim = create_circle();
         break;
       case Prim::PrimType::eSquare:
-        _prims[(int)ptype] = create_square();
+        prim = create_square();
         break;
       case Prim::PrimType::eOther:
         break;

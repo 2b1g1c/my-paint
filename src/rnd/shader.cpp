@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 
-#include "render/shader.hpp"
+#include "rnd/shader.hpp"
 
 std::vector<char> read_file(std::filesystem::path source)
 {

@@ -12,7 +12,7 @@
 #include <glad/glad.h>
 #include <nlohmann/json.hpp>
 
-#include "render/timer.hpp"
+#include "rnd/timer.hpp"
 
 namespace glb {
   inline std::filesystem::path exec_path;

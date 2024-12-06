@@ -1,8 +1,8 @@
 #include "pch.hpp"
 
 #include "app/app.hpp"
-#include "render/prim_coolection.hpp"
-#include "render/timer.hpp"
+#include "rnd/prim_coolection.hpp"
+#include "rnd/timer.hpp"
 
 int main(int argc, char **argv)
 {
