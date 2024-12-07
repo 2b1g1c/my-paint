@@ -55,5 +55,5 @@ void mr::PrimCollection::deserialize(const std::string &str) {
   float s = j["s"].get<float>();
   mr::Prim::PrimType ptype = j["_ptype"].get<mr::Prim::PrimType>();
 
-  emplace_back(ptype, {{px, py}, a, s});
+  emplace_back(ptype, {cx, cy, cz, cw, px, py, a, s});
 }
