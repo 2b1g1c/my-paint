@@ -1,9 +1,9 @@
-#include <algorithm>
-#include <execution>
+#include <string>
+#include "prim.hpp"
 
-// #include <CDT.h>
-
-#include "render/prim.hpp"
+#include "rnd/prim.hpp"
+#include "rnd/ssbo.hpp"
+#include "rnd/shader.hpp"
 
 mr::Prim::~Prim() noexcept
 {
@@ -12,18 +12,13 @@ mr::Prim::~Prim() noexcept
   glDeleteBuffers(1, &_ibuf);
 }
 
-void mr::Prim::draw() const noexcept
-{
-  shader.bind();
-  glUniform2f(glGetUniformLocation(shader.id(), "translation"), p[0], p[1]);
-  glUniform1f(glGetUniformLocation(shader.id(), "rotation"), a);
-  glUniform1f(glGetUniformLocation(shader.id(), "scale"), s);
-
+void mr::Prim::draw(const mr::SSBO<ShapeData> &ssbo) const noexcept {
+  ssbo.apply();
   glBindVertexArray(_va);
 
   if (_ibuf == 0) {
     glDrawArraysInstanced(
-      (uint32_t)_ttype, 0, _num_of_elements, _num_of_instances);
+      (uint32_t)_ttype, 0, _num_of_elements, ssbo.size());
   }
   else {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibuf);
@@ -31,7 +26,7 @@ void mr::Prim::draw() const noexcept
                             _num_of_elements,
                             GL_UNSIGNED_INT,
                             NULL,
-                            _num_of_instances);
+                            ssbo.size());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
@@ -39,8 +34,7 @@ void mr::Prim::draw() const noexcept
   glBindVertexArray(0);
 }
 
-mr::Prim mr::create_circle(float posx, float posy, float r) noexcept
-{
+mr::Prim mr::create_circle() noexcept {
   using vec2 = float[2];
   // (2pi / 0.01) vertices
   vec2 vertices[] = {
@@ -684,13 +678,10 @@ mr::Prim mr::create_circle(float posx, float posy, float r) noexcept
   return mr::Prim("default",
                   std::span<vec2>(vertices),
                   std::span<std::uint32_t>(indices),
-                  posx,
-                  posy,
-                  0,
-                  r);
+                  mr::Prim::PrimType::eCircle);
 }
 
-mr::Prim mr::create_square(float posx, float posy, float a) noexcept
+mr::Prim mr::create_square() noexcept
 {
   using vec2 = float[2];
 
@@ -702,20 +693,26 @@ mr::Prim mr::create_square(float posx, float posy, float a) noexcept
   };
 
   unsigned int indices[] = {
-    // note that we start from 0!
-    0,
-    1,
-    3, // first Triangle
-    1,
-    2,
-    3 // second Triangle
+    0, 1, 3, // first Triangle
+    1, 2, 3  // second Triangle
   };
 
   return mr::Prim("default",
                   std::span<vec2> {vertices},
                   std::span<unsigned int> {indices},
-                  posx,
-                  posy,
-                  0,
-                  a);
+                  mr::Prim::PrimType::eSquare);
+}
+
+std::string mr::serialize(mr::Prim::PrimType ptype, mr::ShapeData shapedata) {
+  nlohmann::json j;
+  j["cx"] = shapedata.c[0];
+  j["cy"] = shapedata.c[1];
+  j["cz"] = shapedata.c[2];
+  j["cw"] = shapedata.c[3];
+  j["_ptype"] = ptype;
+  j["px"] = shapedata.posx();
+  j["py"] = shapedata.posy();
+  j["a"] = shapedata.rot();
+  j["s"] = shapedata.scale();
+  return j.dump(4);
 }

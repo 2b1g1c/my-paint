@@ -1,32 +1,53 @@
 #pragma once
 
 #include "pch.hpp"
-#include "render/shader.hpp"
+#include "rnd/ssbo.hpp"
 
 namespace mr {
+  struct ShapeData {
+    float c[4] = {}; // pos
+    float p[2] = {}; // pos
+    float a = 0;     // angle
+    float s = 1;     // scale
+
+    float & posx() noexcept { return p[0]; }
+    float & posy() noexcept { return p[1]; }
+    float & rot() noexcept { return a; }
+    float & scale() noexcept { return s; }
+
+    float posx() const noexcept { return p[0]; }
+    float posy() const noexcept { return p[1]; }
+    float rot() const noexcept { return a; }
+    float scale() const noexcept { return s; }
+  };
+
+  class Shader;
+
   class Prim {
     private:
       enum class TopologyType : std::uint32_t {
-        eTrimesh = GL_TRIANGLES,
-        ePoints = GL_POINTS,
+        eTrimesh  = GL_TRIANGLES,
+        ePoints   = GL_POINTS,
         eTriStrip = GL_TRIANGLE_STRIP,
-        ePatches = GL_PATCHES,
-        eLines = GL_LINES
+        ePatches  = GL_PATCHES,
+        eLines    = GL_LINES
       };
 
+    public:
+      enum class PrimType : std::uint32_t {
+        eCircle = 0,
+        eSquare = 1,
+        eOther = 2
+      };
+
+    private:
       TopologyType _ttype = TopologyType::eTrimesh;
-      std::uint32_t _num_of_instances = 1;
-      std::uint32_t _vbuf = 0, _ibuf = 0,
-                    _va =
-                      0; // vertex, index buffers, vertex array from the device
+      // vertex, index buffers, vertex array from the device
+      std::uint32_t _vbuf = 0, _ibuf = 0, _va = 0;
       std::uint32_t _num_of_elements = 0; // number of elements on the device
       std::uint32_t _num_of_patches = 0;  // number of patches
 
-      Shader shader;
-
-      float p[2] = {}; // pos
-      float a = 0;     // angle
-      float s = 1;     // scale
+      PrimType _ptype = PrimType::eOther;
 
     public:
       Prim() noexcept = default;
@@ -37,15 +58,10 @@ namespace mr {
         std::swap(_vbuf, other._vbuf);
         std::swap(_ibuf, other._ibuf);
         std::swap(_va, other._va);
-        std::swap(shader, other.shader);
         std::swap(_ttype, other._ttype);
-        std::swap(_num_of_instances, other._num_of_instances);
         std::swap(_num_of_elements, other._num_of_elements);
         std::swap(_num_of_patches, other._num_of_patches);
-        std::swap(p[0], other.p[0]);
-        std::swap(p[1], other.p[1]);
-        std::swap(a, other.a);
-        std::swap(s, other.s);
+        std::swap(_ptype, other._ptype);
       }
 
       Prim& operator=(Prim&& other) noexcept
@@ -53,27 +69,17 @@ namespace mr {
         std::swap(_vbuf, other._vbuf);
         std::swap(_ibuf, other._ibuf);
         std::swap(_va, other._va);
-        std::swap(shader, other.shader);
         std::swap(_ttype, other._ttype);
-        std::swap(_num_of_instances, other._num_of_instances);
         std::swap(_num_of_elements, other._num_of_elements);
         std::swap(_num_of_patches, other._num_of_patches);
-        std::swap(p[0], other.p[0]);
-        std::swap(p[1], other.p[1]);
-        std::swap(a, other.a);
-        std::swap(s, other.s);
+        std::swap(_ptype, other._ptype);
         return *this;
       }
 
       template <typename V, typename I>
-      Prim(std::string_view source, std::span<V> vertices, std::span<I> indices,
-           float posx = 0, float posy = 0, float angle = 0, float scale = 1)
+      Prim(std::string_view source, std::span<V> vertices, std::span<I> indices, PrimType ptype = PrimType::eOther)
       {
-        shader = mr::Shader(source);
-        p[0] = posx;
-        p[1] = posy;
-        a = angle;
-        s = scale;
+        _ptype = ptype;
 
         if (vertices.size() != 0) {
           glGenVertexArrays(1, &_va);
@@ -118,33 +124,16 @@ namespace mr {
 
       ~Prim() noexcept;
 
-      void draw() const noexcept;
+      void draw(const SSBO<ShapeData> &ssbo) const noexcept;
 
       // getters
-      float posx() const { return p[0]; }
+      PrimType ptype() const { return _ptype; }
 
-      float& posx() { return p[0]; }
-
-      float posy() const { return p[1]; }
-
-      float& posy() { return p[1]; }
-
-      float rot() const { return a; }
-
-      float& rot() { return a; }
-
-      float scale() const { return s; }
-
-      float& scale() { return s; }
+      PrimType & ptype() { return _ptype; }
   };
 
-  Prim create_circle(float posx, float poxy, float r) noexcept;
-  Prim create_square(float posx, float poxy, float a) noexcept;
+  Prim create_circle() noexcept;
+  Prim create_square() noexcept;
 
-  template <typename V>
-  inline mr::Prim create_from_points(std::span<V> vertices) noexcept
-  {
-    // TODO: implement (via triangulation (on GPU???))
-    return mr::Prim();
-  }
+  std::string serialize(mr::Prim::PrimType ptype, mr::ShapeData transform);
 } // namespace mr

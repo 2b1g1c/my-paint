@@ -12,6 +12,7 @@ CPMAddPackage(
   GITHUB_REPOSITORY pthom/imgui_bundle
   OPTIONS
     "HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED ON"
+    "IMGUI_BUNDLE_WITH_IMMVISION OFF"
 )
 
 if (NOT TARGET nlohmann_json)
@@ -22,9 +23,19 @@ if (NOT TARGET nlohmann_json)
   )
 endif()
 
+file(
+	DOWNLOAD
+	https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/httplib.h
+	${CMAKE_CURRENT_BINARY_DIR}/_deps/cpp-httplib-src/httplib/httplib.h
+	EXPECTED_HASH SHA256=0e89c56768136a3b2abb835d678206b787c0196d6c083fac8bc0838f707513ec
+)
+add_library(httplib INTERFACE)
+target_include_directories(httplib INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/_deps/cpp-httplib-src)
+
 # set important variables
 set(DEPS_LIBRARIES
   nlohmann_json
+  httplib
 )
 
 set(DEPS_INCLUDE_DIRS
