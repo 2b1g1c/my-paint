@@ -4,7 +4,8 @@
 #include "rnd/ssbo.hpp"
 
 namespace mr {
-  struct Transform {
+  struct ShapeData {
+    float c[4] = {}; // pos
     float p[2] = {}; // pos
     float a = 0;     // angle
     float s = 1;     // scale
@@ -123,7 +124,7 @@ namespace mr {
 
       ~Prim() noexcept;
 
-      void draw(const SSBO<Transform> &ssbo) const noexcept;
+      void draw(const SSBO<ShapeData> &ssbo) const noexcept;
 
       // getters
       PrimType ptype() const { return _ptype; }
@@ -134,5 +135,5 @@ namespace mr {
   Prim create_circle() noexcept;
   Prim create_square() noexcept;
 
-  std::string serialize(mr::Prim::PrimType ptype, mr::Transform transform);
+  std::string serialize(mr::Prim::PrimType ptype, mr::ShapeData transform);
 } // namespace mr

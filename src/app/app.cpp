@@ -38,8 +38,6 @@ mr::Application::Application() noexcept
 
 void mr::Application::gui() noexcept
 {
-  static float my_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::Button("Painting")) {
       if (_show_painting_window == true) {
@@ -87,25 +85,10 @@ void mr::Application::gui() noexcept
     ImGui::Begin("Shapes", &_show_shapes_window);
 
     if (ImGui::Button("Circle")) {
-      /*
-      ImVec2 display_size = scaled_display_size();
-      ImVec2 mouse_pos = scaled_mouse_pos();
-      mouse_pos.x = (2 * (mouse_pos.x / display_size.x) - 1);
-      mouse_pos.y = -(2 * (mouse_pos.y / display_size.y) - 1);
-      _prims.emplace_back_synced(*this, mr::Prim::PrimType::eCircle, {mouse_pos.x, mouse_pos.y, _shape_size});
-      */
       _ptype = mr::Prim::PrimType::eCircle;
     }
     ImGui::SameLine();
-
     if (ImGui::Button("Square")) {
-      /*
-      ImVec2 display_size = scaled_display_size();
-      ImVec2 mouse_pos = scaled_mouse_pos();
-      mouse_pos.x = (2 * (mouse_pos.x / display_size.x) - 1);
-      mouse_pos.y = -(2 * (mouse_pos.y / display_size.y) - 1);
-      _prims.emplace_back_synced(*this, , {mouse_pos.x, mouse_pos.y, _shape_size});
-      */
       _ptype = mr::Prim::PrimType::eSquare;
     }
 
@@ -117,7 +100,7 @@ void mr::Application::gui() noexcept
     ImGui::Begin("Painting parametrs", &_show_painting_window);
     //TODO: add painting checkbox which turns off and on brush
 
-    ImGui::ColorEdit4("Change color", my_color);
+    ImGui::ColorEdit4("Change color", _shape_color);
     ImGui::SliderFloat("Size", &_shape_size, 0.0f, 1.0f, "%.2f");
 
     ImGui::End();

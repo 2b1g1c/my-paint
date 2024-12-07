@@ -12,7 +12,7 @@ mr::Prim::~Prim() noexcept
   glDeleteBuffers(1, &_ibuf);
 }
 
-void mr::Prim::draw(const mr::SSBO<Transform> &ssbo) const noexcept {
+void mr::Prim::draw(const mr::SSBO<ShapeData> &ssbo) const noexcept {
   ssbo.apply();
   glBindVertexArray(_va);
 
@@ -703,12 +703,16 @@ mr::Prim mr::create_square() noexcept
                   mr::Prim::PrimType::eSquare);
 }
 
-std::string mr::serialize(mr::Prim::PrimType ptype, mr::Transform transform) {
+std::string mr::serialize(mr::Prim::PrimType ptype, mr::ShapeData shapedata) {
   nlohmann::json j;
+  j["cx"] = shapedata.c[0];
+  j["cy"] = shapedata.c[1];
+  j["cz"] = shapedata.c[2];
+  j["cw"] = shapedata.c[3];
   j["_ptype"] = ptype;
-  j["px"] = transform.posx();
-  j["py"] = transform.posy();
-  j["a"] = transform.rot();
-  j["s"] = transform.scale();
+  j["px"] = shapedata.posx();
+  j["py"] = shapedata.posy();
+  j["a"] = shapedata.rot();
+  j["s"] = shapedata.scale();
   return j.dump(4);
 }

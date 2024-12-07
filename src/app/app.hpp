@@ -27,7 +27,8 @@ namespace mr {
     bool _show_server_window = false;
     bool _show_debug_window = false;
     bool _show_join_window = false;
-    float _shape_size = 0.01f; //drawing size
+    float _shape_color[4] = {}; // drawing color
+    float _shape_size = 0.01f;  //drawing size
 
     ImVec2 scaled_display_size() const noexcept
     {
@@ -65,7 +66,11 @@ namespace mr {
       auto& io = ImGui::GetIO();
 
       if (ImGui::IsMouseDown(0)) /* LMB */ {
-        _prims.emplace_back_synced(*this, _ptype, {mouse_pos.x, mouse_pos.y, _shape_size});
+        _prims.emplace_back_synced(*this, _ptype, {
+            _shape_color[0], _shape_color[1], _shape_color[2], _shape_color[3],
+            mouse_pos.x, mouse_pos.y,
+            0, _shape_size
+          });
       }
     }
 
