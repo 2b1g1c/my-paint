@@ -87,20 +87,26 @@ void mr::Application::gui() noexcept
     ImGui::Begin("Shapes", &_show_shapes_window);
 
     if (ImGui::Button("Circle")) {
+      /*
       ImVec2 display_size = scaled_display_size();
       ImVec2 mouse_pos = scaled_mouse_pos();
       mouse_pos.x = (2 * (mouse_pos.x / display_size.x) - 1);
       mouse_pos.y = -(2 * (mouse_pos.y / display_size.y) - 1);
       _prims.emplace_back_synced(*this, mr::Prim::PrimType::eCircle, {mouse_pos.x, mouse_pos.y, _shape_size});
+      */
+      _ptype = mr::Prim::PrimType::eCircle;
     }
     ImGui::SameLine();
 
     if (ImGui::Button("Square")) {
+      /*
       ImVec2 display_size = scaled_display_size();
       ImVec2 mouse_pos = scaled_mouse_pos();
       mouse_pos.x = (2 * (mouse_pos.x / display_size.x) - 1);
       mouse_pos.y = -(2 * (mouse_pos.y / display_size.y) - 1);
-      _prims.emplace_back_synced(*this, mr::Prim::PrimType::eSquare, {mouse_pos.x, mouse_pos.y, _shape_size});
+      _prims.emplace_back_synced(*this, , {mouse_pos.x, mouse_pos.y, _shape_size});
+      */
+      _ptype = mr::Prim::PrimType::eSquare;
     }
 
     ImGui::End();
@@ -135,7 +141,7 @@ void mr::Application::gui() noexcept
 
     if (ImGui::Button("Connect")) {
       std::cout << "Connecting to: " << ip_address << std::endl;
-      //add connecting func
+      connect_to_canvas(ip_address);
     }
 
     ImGui::End();

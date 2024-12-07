@@ -21,6 +21,7 @@ namespace mr {
     mr::Server _server = {*this, get_self_ip()};
     std::jthread _thread;
 
+    mr::Prim::PrimType _ptype = mr::Prim::PrimType::eSquare;
     bool _show_shapes_window = false;
     bool _show_painting_window = false;
     bool _show_server_window = false;
@@ -64,9 +65,7 @@ namespace mr {
       auto& io = ImGui::GetIO();
 
       if (ImGui::IsMouseDown(0)) /* LMB */ {
-        _prims.emplace_back_synced(*this,
-                                   mr::Prim::PrimType::eCircle,
-                                   {mouse_pos.x, mouse_pos.y, _shape_size});
+        _prims.emplace_back_synced(*this, _ptype, {mouse_pos.x, mouse_pos.y, _shape_size});
       }
     }
 
