@@ -7,7 +7,7 @@ struct Transform
   float scale;
 };
 
-layout(std430, binding = 2) readonly buffer Transforms
+layout(std430, binding = 0) readonly buffer Transforms
 {
   Transform transforms[];
 };
