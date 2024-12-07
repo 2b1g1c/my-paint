@@ -37,8 +37,7 @@ void mr::Server::connect_to_canvas(std::string val) {
   auto res = cli.Get("/cgsg/cli"); // refresh vector of _clients with this user
   if (res) {
     append_ip(res->body);
-  }
-  else {
+  } else {
     std::cout << "Sorry, the canvas was not there :(" << std::endl;
     return;
   }
@@ -46,11 +45,17 @@ void mr::Server::connect_to_canvas(std::string val) {
   cli.Post("/cgsg/my_ip", _ip, "text/plain"); // send itself ip
 
   auto json_objects = cli.Get("/cgsg/obj");
-  nlohmann::json j = nlohmann::json::parse(json_objects->body);
-  for (const auto& id : j["obj"]) {
-    std::string json_str = nlohmann::json::parse(id.get<std::string>()).dump(4);
-    _parent._prims.deserialize(json_str);
+  if (json_objects) {
+    nlohmann::json j = nlohmann::json::parse(json_objects->body);
+    for (const auto& id : j["obj"]) {
+      std::string json_str = nlohmann::json::parse(id.get<std::string>()).dump(4);
+      _parent._prims.deserialize(json_str); // to json
+    }
+  } else {
+    std::cout << "Sorry, there aren't any drew objects :(" << std::endl;
+    return;
   }
+  
 }
 
 void mr::Server::server_func() {
